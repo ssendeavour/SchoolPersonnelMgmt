@@ -20,20 +20,25 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     person.cpp \
     student.cpp \
-    studenttablewidget.cpp \
     teacher.cpp \
     teachertablewidget.cpp \
     postgraduate.cpp \
-    teachingassistant.cpp
+    teachingassistant.cpp \
+    studenttablewidget.cpp \
+    studenttablemodel.cpp \
+    dateeditdelegate.cpp
 
 HEADERS  += mainwindow.h \
     person.h \
     student.h \
-    studenttablewidget.h \
     teacher.h \
     teachertablewidget.h \
     postgraduate.h \
-    teachingassistant.h
+    teachingassistant.h \
+    const.h \
+    studenttablewidget.h \
+    studenttablemodel.h \
+    dateeditdelegate.h
 
 FORMS    += mainwindow.ui
 

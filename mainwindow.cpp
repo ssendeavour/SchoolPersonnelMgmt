@@ -9,6 +9,7 @@
 
 #include "studenttablewidget.h"
 #include "teachertablewidget.h"
+#include "teachingassistant.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,41 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->setupUi(this);
     setWindowTitle(tr("人事管理系统"));
     initUI();
-
-    Student student("Class 1", "Yang", "001", "123456", "male", QDate(2011, 2, 28));
-    Teacher teacher("Yang", "001", "123456", "male", QDate(1582, 9, 15), "CS", "vice Prof.");
-
-    QFile file("binary_file");
-    if(!file.open(QIODevice::ReadWrite|QIODevice::Text)){
-        qDebug() << "error open file: " << file.errorString();
-    } else {
-        QDataStream out(&file);
-        out << student;
-        qDebug() << student.toString();
-        student.setName("Name2");
-        out << student;
-        qDebug() << student.toString();
-        out << teacher;
-        qDebug() << teacher.toString();
-    }
-    file.close();
-
-    if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
-        qDebug() << file.errorString();
-    } else {
-        QDataStream in(&file);
-        Student stu2;
-        in >> stu2;
-        qDebug() << stu2.toString();
-        in >> stu2;
-        qDebug() << stu2.toString();
-
-        Teacher teach2;
-        in >> teach2;
-        qDebug() << teach2.toString();
-
-        file.close();
-    }
 }
 
 void MainWindow::initUI()

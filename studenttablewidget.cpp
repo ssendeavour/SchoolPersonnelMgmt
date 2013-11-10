@@ -1,28 +1,32 @@
 #include "studenttablewidget.h"
 
 #include <QDebug>
+#include <QHeaderView>
+#include <QDateEdit>
+#include <QModelIndex>
+
+#include "dateeditdelegate.h"
 
 StudentTableWidget::StudentTableWidget(QWidget *parent) :
-    QTableWidget(parent)
+    QTableView(parent)
 {
-    static const QStringList headers{"ID", "Name", "ClassNo", "IDNo", "Sex", "Birthday"};
-    setColumnCount(headers.length());
-    setHorizontalHeaderLabels(headers);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
-    setSelectionMode(QAbstractItemView::ExtendedSelection);
-    setWordWrap(true);
+    StudentTableModel *studentModel = new StudentTableModel(this);
+    this->setModel(studentModel);
+    this->resizeColumnsToContents();
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    this->setSelectionBehavior(QAbstractItemView::SelectItems);
 
-    setRowCount(10);
-    for(int i=0; i<rowCount(); i++){
-        for(int j=0; j<columnCount(); j++){
-            QTableWidgetItem *item = new QTableWidgetItem(tr("(%1,%2)").arg(i).arg(j));
-            setItem(i,j,item);
-        }
-    }
-
-    resizeColumnsToContents();
+    this->setItemDelegate(new DateEditDelegate(this));
 }
 
 StudentTableWidget::~StudentTableWidget()
 {
+}
+
+bool StudentTableWidget::saveDataToFile(){
+    return true;
+}
+
+bool StudentTableWidget::loadDataFromFile(){
+    return true;
 }

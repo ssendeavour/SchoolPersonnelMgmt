@@ -3,7 +3,7 @@
 Teacher::Teacher(const QString name /*= QString()*/,
         const QString id /*= QString()*/,
         const QString idNum /*= QString()*/,
-        const QString sex /*= QString()*/,
+        const Sex sex /*= QString()*/,
         const QDate birthDay /*= QDate(0,0,0)*/,
         const QString dept /*= QString()*/,
         const QString position /*= QString()*/):
@@ -33,7 +33,7 @@ QDataStream &Teacher::readBinary(QDataStream &in){
     return Person::readBinary(in) >> this->dept >> this->position;
 }
 
-QString Teacher::toString()
+QString Teacher::toString() const
 {
-    return Person::toString() + ", Dept.: " + dept + ", Position: " + position;
+    return tr("%1, Department: %2, Position: %3").arg(Person::toString()).arg(dept).arg(position);
 }

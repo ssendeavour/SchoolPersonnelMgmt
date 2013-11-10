@@ -5,14 +5,13 @@ TeachingAssistant::TeachingAssistant(
         const QString name /*= QString()*/,
         const QString id /*= QString()*/,
         const QString idNum /*= QString()*/,
-        const QString sex /*= QString()*/,
+        const Sex sex /*= QString()*/,
         const QDate birthDay /*= QDate(0,0,0)*/,
         const QString major /*= QString()*/,
         const QString tutorId /*= QString()*/,
         const QString dept /*= QString()*/,
         const QString position /*= QString()*/
-        ) :
-    Person(name, id, idNum, sex, birthDay),
+        ) : Person(name, id, idNum, sex, birthDay),
     Teacher(name, id, idNum, sex, birthDay, dept, position),
     Postgraduate(classNo, name, id, idNum, sex, birthDay, major, tutorId)
 {
@@ -30,8 +29,8 @@ QDataStream &operator >>(QDataStream &in, TeachingAssistant &ta){
     return ta.readBinary(in);
 }
 
-QString TeachingAssistant::toString(){
-   return Postgraduate::toString() + ", Dept.: " + dept + ", Position: " + position;
+QString TeachingAssistant::toString() const{
+   return tr("%1, Department: %2, Position: %3").arg(Postgraduate::toString()).arg(dept).arg(position);
 }
 
 QDataStream &TeachingAssistant::writeBinary(QDataStream &out) const{

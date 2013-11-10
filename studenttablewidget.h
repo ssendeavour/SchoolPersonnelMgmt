@@ -1,11 +1,10 @@
 #pragma once
 
-#include <QTableWidget>
+#include <QTableView>
 
-#include "student.h"
+#include "studenttablemodel.h"
 
-
-class StudentTableWidget : public QTableWidget
+class StudentTableWidget : public QTableView
 {
     Q_OBJECT
 public:
@@ -15,8 +14,10 @@ public:
 signals:
 
 public slots:
+    bool saveDataToFile();
+    bool loadDataFromFile();
 
 private:
-    StudentTableWidget *table_;
+
 };
 

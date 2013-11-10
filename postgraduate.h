@@ -4,16 +4,16 @@
 
 class Postgraduate : public Student
 {
-    Q_OBJECT
+//    Q_OBJECT
 public:
     static const int POSTGRADUATE_MAJOR_LEN = 20;
 
     Postgraduate(const QString classNo = QString(),
-                 const QString name = QString(),
-                 const QString id = QString(),
-                 const QString idNum = QString(),
-                 const QString sex = QString(),
-                 const QDate birthDay = QDate(0,0,0),
+                 const QString name_ = QString(),
+                 const QString id_ = QString(),
+                 const QString idNum_ = QString(),
+                 const Sex sex_ = Sex::Unspecified,
+                 const QDate birthDay_ = QDate(0,0,0),
                  const QString major = QString(),
                  const QString tutorId = QString());
 
@@ -22,20 +22,19 @@ public:
     friend QDataStream &operator <<(QDataStream &out, const Postgraduate &pg);
     friend QDataStream &operator >>(QDataStream &in, Postgraduate &pg);
 
-    virtual QString toString() override;
+    virtual QString toString() const override;
 
  protected:
     virtual QDataStream &writeBinary(QDataStream &out) const override;
     virtual QDataStream &readBinary(QDataStream &in) override;
 
-signals:
 
-public slots:
+public:
     QString getMajor() const;
     bool setMajor(QString major);
 
     QString getTutorId() const;
-    bool setTutorId(QString id);
+    bool setTutorId(QString id_);
 
 protected:
     QString major;
