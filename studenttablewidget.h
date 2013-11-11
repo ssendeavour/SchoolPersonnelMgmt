@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QTableView>
+#include <QFile>
 
 #include "studenttablemodel.h"
 
@@ -14,10 +15,10 @@ public:
 signals:
 
 public slots:
-    bool saveDataToFile();
-    bool loadDataFromFile();
+    bool saveDataToFile(QFile &file);
+    bool openFromFile(QFile &file);
 
 private:
-
+    StudentTableModel *studentModel;
 };
 

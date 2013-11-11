@@ -1,22 +1,37 @@
-#include "dateeditdelegate.h"
+#include "StudentTableDelegate.h"
 
 #include <QApplication>
 #include <QDateEdit>
 #include <QComboBox>
+#include <QLineEdit>
+#include <QRegExpValidator>
+#include <QRegExp>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 #include "studenttablemodel.h"
 
-DateEditDelegate::DateEditDelegate(QObject *parent) :
+StudentTableDelegate::StudentTableDelegate(QObject *parent) :
     QStyledItemDelegate(parent)
 {
 }
 
-QWidget *DateEditDelegate::createEditor(
+QWidget *StudentTableDelegate::createEditor(
         QWidget *parent,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
     switch(static_cast<StudentTableModel::heading>(index.column())){
+    case StudentTableModel::heading::ID : {
+        QLineEdit * idEditor = new QLineEdit(parent);
+        idEditor->setMaxLength(Person::PERSON_ID_LEN);
+        return idEditor;
+    }
+    case StudentTableModel::heading::NAME : {
+        QLineEdit * nameEditor = new QLineEdit(parent);
+        nameEditor->setMaxLength(Person::PERSON_NAME_LEN);
+        return nameEditor;
+    }
     case StudentTableModel::heading::SEX : {
         QComboBox *sexEditor = new QComboBox(parent);
         sexEditor->addItem(Student::getSexString(Student::Sex::Male),
@@ -37,12 +52,25 @@ QWidget *DateEditDelegate::createEditor(
         birthdayEditor->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
         return birthdayEditor;
     }
+    case StudentTableModel::heading::CLASSNO : {
+        QLineEdit * idEditor = new QLineEdit(parent);
+        idEditor->setMaxLength(Student::STUDENT_CLASSNO_LEN);
+        return idEditor;
+    }
+    case StudentTableModel::heading::IDNUMBER : {
+        QLineEdit * idEditor = new QLineEdit(parent);
+        idEditor->setMaxLength(Person::PERSON_ID_NUM_LEN);
+//        idEditor->setValidator(Person::obtainIDNumberValidator());
+        idEditor->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d{17}[0-9xX]"), parent));
+//        idEditor->setInputMask("999999-99999999-999>H;_");
+        return idEditor;
+    }
     default:
         return QStyledItemDelegate::createEditor(parent,option, index);
     }
 }
 
-void DateEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
     switch(static_cast<StudentTableModel::heading>(index.column())){
     case StudentTableModel::heading::SEX : {
         QComboBox *sexEditor = qobject_cast<QComboBox*>(editor);
@@ -66,7 +94,7 @@ void DateEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
         return QStyledItemDelegate::setEditorData(editor, index);
     }
 }
-void DateEditDelegate::setModelData(
+void StudentTableDelegate::setModelData(
         QWidget *editor,
         QAbstractItemModel *model,
         const QModelIndex &index) const
@@ -87,7 +115,7 @@ void DateEditDelegate::setModelData(
     }
 }
 
-void DateEditDelegate::updateEditorGeometry(
+void StudentTableDelegate::updateEditorGeometry(
         QWidget *editor,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const

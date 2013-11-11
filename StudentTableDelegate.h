@@ -2,11 +2,11 @@
 
 #include <QStyledItemDelegate>
 
-class DateEditDelegate : public QStyledItemDelegate
+class StudentTableDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit DateEditDelegate(QObject *parent = 0);
+    explicit StudentTableDelegate(QObject *parent = 0);
 
 signals:
 

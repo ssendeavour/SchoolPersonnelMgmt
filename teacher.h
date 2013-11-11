@@ -12,8 +12,8 @@ public:
             const QString idNum_ = QString(),
             const Sex sex_ = Sex::Unspecified,
             const QDate birthDay_ = QDate(0,0,0),
-            const QString dept = QString(),
-            const QString position = QString());
+            const QString dept_ = QString(),
+            const QString position_ = QString());
     virtual ~Teacher();
 
     friend QDataStream &operator <<(QDataStream &out, const Teacher &teacher);
@@ -26,37 +26,41 @@ public:
     virtual QDataStream &readBinary(QDataStream &in) override;
 public:
     QString getDepartment() const;
-    bool setDepartment(QString dept);
+    bool setDepartment(QString dept_);
 
     QString getPosition() const;
-    bool setPosition(QString position);
+    bool setPosition(QString position_);
 
 protected:
-    QString dept;
-    QString position;
+    QString dept_;
+    QString position_;
 };
 
 
 inline QString Teacher::getDepartment() const{
-    return this->dept;
+    return this->dept_;
 }
 
 inline bool Teacher::setDepartment(QString dept){
     if(dept.length() > TEACHER_DEPT_LEN){
+        this->errorString_ = tr("department name %1 too long, current length: %2, max length: %3")
+                .arg(dept).arg(dept.length()).arg(TEACHER_DEPT_LEN);
         return false;
     }
-    this->dept = dept;
+    this->dept_ = dept;
     return true;
 }
 
 inline QString Teacher::getPosition() const{
-    return this->position;
+    return this->position_;
 }
 
 inline bool Teacher::setPosition(QString position){
     if(position.length() > TEACHER_POSITION_LEN){
+        this->errorString_ = tr("position name %1 too long, current length %2, max length: %3")
+                .arg(position).arg(position.length()).arg(TEACHER_POSITION_LEN);
         return false;
     }
-    this->position = position;
+    this->position_ = position;
     return true;
 }

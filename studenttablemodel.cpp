@@ -4,10 +4,38 @@
 StudentTableModel::StudentTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-    Student stu("Class1", "Bear", "001", "23342535234131321", Student::Sex::Female, QDate(1995, 12, 10));
+    Student stu("Class1", "Bear", "001", "23342535234131321X", Student::Sex::Female, QDate(1995, 12, 10));
     this->list_.append(stu);
-    stu.setName("yang");
+
+    if(!stu.setName("yang")){
+        qDebug() << stu.errorString();
+    }
+    if(!stu.setBirthday(QDate(2008,12, 31))){
+        qDebug() << stu.errorString();
+    }
     this->list_.append(stu);
+
+    if(!stu.setName("Hu JIn Tao")){
+        qDebug() << stu.errorString();
+    }
+    this->list_.append(stu);
+
+    if(!stu.setBirthday(QDate(2999, 12, 22))){
+        qDebug() << stu.errorString();
+    }
+    this->list_.append(stu);
+
+    Student stu2("Class2", "Bear simple", "002", "23342535234131321f", Student::Sex::Male, QDate(1998, 12, 32));
+    this->list_.append(stu2);
+
+    if(!stu2.setBirthday(QDate::currentDate())){
+        qDebug() << stu2.errorString();
+    }
+    this->list_.append(stu2);
+
+    stu = Student();
+    this->list_.append(stu);
+
 }
 
 int StudentTableModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{
@@ -109,11 +137,19 @@ QVariant StudentTableModel::headerData(int section, Qt::Orientation orientation,
     if(role != Qt::DisplayRole){
         return QVariant();
     }
-    return this->headerString_.at(section);
+    if(orientation == Qt::Vertical){
+        return section;
+    } else {
+        return this->headerString_.at(section);
+    }
 }
 
 void StudentTableModel::setStudentList(QList<Student> list){
     beginResetModel();
     this->list_ = list;
     endResetModel();
+}
+
+QList<Student> StudentTableModel::getStudentList(){
+    return this->list_;
 }

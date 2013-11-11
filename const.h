@@ -13,4 +13,9 @@ static const u_int32_t FILE_TYPE_TUTOR = 0x4;
 static const u_int32_t FILE_TYPE_POSTGRADUATE = 0x5;
 
 static const u_int32_t VERSION_1_20131109 = 0x1;
+
+static const QString FILE_EXTENSION_STUDENT = "psls";
+static const QString FILE_EXTENSION_TEACHER = "pslt";
+static const QString FILE_EXTENSION_POSTGRADUATE = "pslp";
+static const QString FILE_EXTENSION_TA = "pslta";
 }

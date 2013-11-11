@@ -14,9 +14,9 @@ public:
                       const Sex sex_ = Sex::Unspecified,
                       const QDate birthDay_ = QDate(0,0,0),
                       const QString major = QString(),
-                      const QString tutorId = QString(),
-                      const QString dept = QString(),
-                      const QString position = QString());
+                      const QString tutorId_ = QString(),
+                      const QString dept_ = QString(),
+                      const QString position_ = QString());
 
     virtual ~TeachingAssistant();
 

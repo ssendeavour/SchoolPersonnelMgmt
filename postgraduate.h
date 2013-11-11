@@ -15,7 +15,7 @@ public:
                  const Sex sex_ = Sex::Unspecified,
                  const QDate birthDay_ = QDate(0,0,0),
                  const QString major = QString(),
-                 const QString tutorId = QString());
+                 const QString tutorId_ = QString());
 
     virtual ~Postgraduate();
 
@@ -37,31 +37,35 @@ public:
     bool setTutorId(QString id_);
 
 protected:
-    QString major;
-    QString tutorId;
+    QString major_;
+    QString tutorId_;
 };
 
 
 inline QString Postgraduate::getMajor() const{
-    return this->major;
+    return this->major_;
 }
 
 inline bool Postgraduate::setMajor(QString major){
     if(major.length() > POSTGRADUATE_MAJOR_LEN){
+        this->errorString_ = tr("major name %1 too long, current length: %2, max length: %3")
+                .arg(major).arg(major.length()).arg(POSTGRADUATE_MAJOR_LEN);
         return false;
     }
-    this->major = major;
+    this->major_ = major;
     return true;
 }
 
 inline QString Postgraduate::getTutorId() const{
-    return this->tutorId;
+    return this->tutorId_;
 }
 
 inline bool Postgraduate::setTutorId(QString id){
     if(id.length() > PERSON_ID_LEN){
+        this->errorString_ = tr("tutor's id %1 too long, current length %2, max length %3")
+                .arg(tutorId_).arg(tutorId_.length()).arg(PERSON_ID_LEN);
         return false;
     }
-    this->tutorId = id;
+    this->tutorId_ = id;
     return true;
 }

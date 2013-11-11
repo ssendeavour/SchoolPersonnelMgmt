@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QDate>
 #include <QString>
 #include <QDataStream>
@@ -6,6 +7,8 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <cstdint>
+#include <QRegExp>
+#include <QRegExpValidator>
 
 #include "const.h"
 
@@ -18,6 +21,7 @@ public:
     static const int PERSON_ID_LEN = 6;
     static const int PERSON_ID_NUM_LEN = 18;
     static const int PERSON_SEX_LEN = 2;
+    static const QRegExpValidator *idNumberValidator;
 
     enum class Sex : u_int8_t {
         Male,
@@ -28,9 +32,9 @@ public:
 
     Person(const QString name_ = QString(),
            const QString id_ = QString(),
-           const QString idNum_ = QString(),
+           const QString idNum_ = QString("000000000000000000"),
            const Sex sex_ = Sex::Unspecified,
-           const QDate birthDay_ = QDate(0,0,0));
+           const QDate birthDay_ = QDate(1880,1,1));
 
     virtual ~Person();
 
@@ -41,6 +45,7 @@ public:
 
     static QString getSexString(Person::Sex sex);
     virtual QString toString() const;
+    static const QRegExpValidator* obtainIDNumberValidator();
 
     QString errorString() const;
 
@@ -64,13 +69,15 @@ protected:
     virtual QDataStream &readBinary(QDataStream &in);
 
 protected:
-    QString errorString_ = "";
-    QString name_ = "";
-    QString id_ = "";
-    QString idNum_ = "";
-    Sex sex_ = Sex::Unspecified;
-    QDate birthDay_ = QDate();
+    QString errorString_;
+    QString name_;
+    QString id_;
+    QString idNum_;
+    Sex sex_;
+    /* birtday valid Range: QDate(1880, 1, 1) <= birthDay_ <= QDate::currentDay(); */
+    QDate birthDay_;
 };
+
 
 inline QString Person::errorString() const{
     return this->errorString_;
@@ -107,9 +114,10 @@ inline QString Person::getIdNumber() const{
  }
 
 inline bool Person::setIdNumber(QString idNum){
-     if(idNum.length() > PERSON_ID_NUM_LEN){
-         this->errorString_ = tr("ID number \"%1\" too long, length: %2, max length: %3")
-                 .arg(idNum).arg(idNum.length()).arg(PERSON_ID_NUM_LEN);
+    int pos = 0;
+    if(Person::idNumberValidator->validate(idNum, pos) != QValidator::Acceptable){
+         this->errorString_ = tr("ID number format error, should be 18 digitis or "
+                                 "17 digits and letter x/X, id number: %1") .arg(idNum);
          return false;
      }
      this->idNum_ = idNum;
@@ -129,10 +137,11 @@ inline QDate Person::getBirthday() const{
  }
 
 inline bool Person::setBirthday(QDate birthday){
-    if(!birthday.isValid()){
-        this->errorString_ = tr("date is not valid");
+    if(birthday.isValid() && birthday <= QDate::currentDate() && birthday >= QDate(1880,1,1)){
+        this->birthDay_ = birthday;
+        return true;
+    } else {
+        this->errorString_ = tr("date is not valid or out of range, Date is: %1").arg(birthday.toString("yyyy-MM-dd"));
         return false;
     }
-    this->birthDay_ = birthday;
-    return true;
  }

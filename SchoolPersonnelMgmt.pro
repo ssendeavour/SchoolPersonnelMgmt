@@ -26,7 +26,7 @@ SOURCES += main.cpp\
     teachingassistant.cpp \
     studenttablewidget.cpp \
     studenttablemodel.cpp \
-    dateeditdelegate.cpp
+    StudentTableDelegate.cpp
 
 HEADERS  += mainwindow.h \
     person.h \
@@ -38,7 +38,7 @@ HEADERS  += mainwindow.h \
     const.h \
     studenttablewidget.h \
     studenttablemodel.h \
-    dateeditdelegate.h
+    StudentTableDelegate.h
 
 FORMS    += mainwindow.ui
 

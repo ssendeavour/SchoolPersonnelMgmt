@@ -30,14 +30,14 @@ QDataStream &operator >>(QDataStream &in, TeachingAssistant &ta){
 }
 
 QString TeachingAssistant::toString() const{
-   return tr("%1, Department: %2, Position: %3").arg(Postgraduate::toString()).arg(dept).arg(position);
+   return tr("%1, Department: %2, Position: %3").arg(Postgraduate::toString()).arg(dept_).arg(position_);
 }
 
 QDataStream &TeachingAssistant::writeBinary(QDataStream &out) const{
-    return Postgraduate::writeBinary(out) << this->dept << this->position;
+    return Postgraduate::writeBinary(out) << this->dept_ << this->position_;
 }
 
 QDataStream &TeachingAssistant::readBinary(QDataStream &in){
-    return Postgraduate::readBinary(in) >> this->dept >> this->position;
+    return Postgraduate::readBinary(in) >> this->dept_ >> this->position_;
 }
 

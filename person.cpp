@@ -6,14 +6,31 @@ Person::Person(const QString name /*= QString()*/,
                const QString id /*= QString()*/,
                const QString idNum/* = QString()*/,
                const Sex sex /*= Sex::Unspecified*/,
-               const QDate birthDay /*= QDate(0,0,0)*/):
-    name_(name), id_(id), idNum_(idNum), sex_(sex), birthDay_(birthDay)
+               const QDate birthDay /*= QDate(0,0,0)*/) : sex_(sex)
 {
+    if(!setName(name)){
+        qDebug() << this->errorString_;
+        setName("");
+    }
+    if(!setId(id)){
+        qDebug() << this->errorString_;
+        id_ = tr("");
+    }
+    if(!setIdNumber(idNum)){
+        qDebug() << this->errorString_;
+        setIdNumber(QString("000000000000000000"));
+    }
+    if(!setBirthday(birthDay)){
+        qDebug() << this->errorString_;
+        birthDay_ = QDate(1880, 1, 1);
+    }
 }
 
 Person::~Person()
 {
 }
+
+const QRegExpValidator *Person::idNumberValidator =  new QRegExpValidator(QRegExp("^\\d{17}[0-9xX]$") , nullptr);
 
  QDataStream &Person::writeBinary(QDataStream &out) const {
      out << this->name_ << this->id_ << this->idNum_
@@ -54,4 +71,8 @@ QString Person::getSexString(Sex sex){
     default:
         return tr("Other");
     }
+}
+
+const QRegExpValidator* Person::obtainIDNumberValidator(){
+    return idNumberValidator;
 }

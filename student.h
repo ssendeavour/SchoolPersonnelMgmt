@@ -1,6 +1,8 @@
 #pragma once
 #include "person.h"
 
+#include <QFile>
+
 class Student : virtual public Person
 {
 //    Q_OBJECT
@@ -19,8 +21,11 @@ public:
     friend QDataStream &operator >>(QDataStream &in, Student &student);
 
 public:
-   static bool writeToFile(QString fileName, const QList<Student> *list);
-   static QList<Student> *readFromFile(QString fileName);
+    /* Parameter: file is an opend file, don't close it here. */
+   static bool writeToFile(QFile &file, const QList<Student> list);
+
+    /* Parameter: file is an opend file, don't close it here */
+   static QList<Student> readFromFile(QFile &file, bool &succeed);
 
 public:
    virtual QString toString() const override;

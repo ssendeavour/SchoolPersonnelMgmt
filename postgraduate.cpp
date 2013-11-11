@@ -9,10 +9,17 @@ Postgraduate::Postgraduate(const QString classNo /*= QString()*/,
                            const QString major /*= QString()*/,
                            const QString tutorId /*= QString()*/) :
     Person(name, id, idNum, sex, birthDay),
-    Student(classNo, name, id, idNum, sex, birthDay),
-    tutorId(tutorId)
+    Student(classNo, name, id, idNum, sex, birthDay)
 {
-    this->major = major;
+    if(!setMajor(major)){
+        qDebug() << this->errorString_;
+        setMajor(tr("none"));
+    }
+
+    if(!setTutorId(tutorId)){
+        qDebug() << this->errorString_;
+        setTutorId(tr("none"));
+    }
 }
 
 Postgraduate::~Postgraduate()
@@ -30,14 +37,14 @@ QDataStream &operator >> (QDataStream &in, Postgraduate &pg)
 }
 
 QDataStream &Postgraduate::writeBinary(QDataStream &out) const{
-    return Student::writeBinary(out) << this->major << this->tutorId;
+    return Student::writeBinary(out) << this->major_ << this->tutorId_;
 }
 
 QDataStream &Postgraduate::readBinary(QDataStream &in){
-    return Student::readBinary(in) >> this->major >> this->tutorId;
+    return Student::readBinary(in) >> this->major_ >> this->tutorId_;
 }
 
 QString Postgraduate::toString() const
 {
-    return tr("%1, Major: %2, Tutor's id: %3").arg(Student::toString()).arg(major).arg(tutorId);
+    return tr("%1, Major: %2, Tutor's id: %3").arg(Student::toString()).arg(major_).arg(tutorId_);
 }
