@@ -28,10 +28,9 @@ bool StudentTableWidget::saveDataToFile(QFile &file){
     return Student::writeToFile(file, list);
 }
 
-bool StudentTableWidget::openFromFile(QFile &file){
-    bool succeed;
-    auto list = Student::readFromFile(file, succeed);
-    if(!succeed){
+bool StudentTableWidget::openFromFile(QFile &file, QString &error){
+    auto list = Student::readFromFile(file, error);
+    if(error.length() > 0){
         return false;
     }
     studentModel->setStudentList(list);

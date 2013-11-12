@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     person.cpp \
     student.cpp \
     teacher.cpp \
-    teachertablewidget.cpp \
     postgraduate.cpp \
     teachingassistant.cpp \
     studenttablewidget.cpp \

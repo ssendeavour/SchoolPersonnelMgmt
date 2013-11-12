@@ -21,11 +21,12 @@ public:
     friend QDataStream &operator >>(QDataStream &in, Student &student);
 
 public:
-    /* Parameter: file is an opend file, don't close it here. */
+    /* Parameter: file is an opend file, don't close it here.
+     * currently, always return true */
    static bool writeToFile(QFile &file, const QList<Student> list);
 
     /* Parameter: file is an opend file, don't close it here */
-   static QList<Student> readFromFile(QFile &file, bool &succeed);
+   static QList<Student> readFromFile(QFile &file, QString &error);
 
 public:
    virtual QString toString() const override;

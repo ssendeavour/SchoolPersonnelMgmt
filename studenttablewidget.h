@@ -16,7 +16,7 @@ signals:
 
 public slots:
     bool saveDataToFile(QFile &file);
-    bool openFromFile(QFile &file);
+    bool openFromFile(QFile &file, QString &error);
 
 private:
     StudentTableModel *studentModel;

@@ -35,7 +35,24 @@ StudentTableModel::StudentTableModel(QObject *parent) :
 
     stu = Student();
     this->list_.append(stu);
-
+    list_ += list_;
+    list_ += list_;
+    /*
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    list_ += list_;
+    */
 }
 
 int StudentTableModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{

@@ -39,23 +39,22 @@ QString Student::toString() const
     return tr("%1, Class No.: %2").arg(Person::toString()).arg(classNo);
 }
 
-QList<Student> Student::readFromFile(QFile &file, bool &succeed)
+QList<Student> Student::readFromFile(QFile &file, QString &error)
 {
     QList<Student> list;
-    succeed = false;
 
     QDataStream in(&file);
     u_int32_t magicNumber;
     in >> magicNumber;
     if(magicNumber != CONST::MAGIC_NUMBER){
-        qDebug() << "unknown file format";
+        error = tr("Wrong file format, not a student data file (.%1).").arg(CONST::FILE_EXTENSION_STUDENT.toUpper());
         return list;
     }
 
     u_int32_t version;
     in >> version;
     if(version != CONST::VERSION_1_20131109){
-        qDebug() << "unknow students data file version: " << version;
+        error = tr("unknow students data file version: %1").arg(version);
         return list;
     }
 
@@ -70,7 +69,6 @@ QList<Student> Student::readFromFile(QFile &file, bool &succeed)
         in >> stu;
         list.append(stu);
     }
-    succeed = true;
     return list;
 }
 
@@ -85,7 +83,6 @@ bool Student::writeToFile(QFile &file, const QList<Student> list)
 
     for(Student item : list){
         out << item;
-        qDebug() << item.toString();
     }
     return true;
 }
