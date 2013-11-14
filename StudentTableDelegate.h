@@ -1,12 +1,15 @@
 #pragma once
 
 #include <QStyledItemDelegate>
+#include <QVector>
+
+#include "const.h"
 
 class StudentTableDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit StudentTableDelegate(QObject *parent = 0);
+    explicit StudentTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent = 0);
 
 signals:
 
@@ -16,4 +19,7 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+private:
+    QVector<CONST::HDG> indexMap_;
 };

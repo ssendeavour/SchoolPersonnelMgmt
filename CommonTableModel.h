@@ -2,24 +2,17 @@
 
 #include <QAbstractTableModel>
 #include <QList>
+#include <QVector>
 #include <QStringList>
 
-#include "student.h"
+#include "teachingassistant.h"
 
-class StudentTableModel : public QAbstractTableModel
+template <class P>
+class CommonTableModel : public QAbstractTableModel
 {
-    Q_OBJECT
+//    Q_OBJECT
 public:
-    explicit StudentTableModel(QObject *parent = 0);
-
-    enum class heading : quint8 {
-        ID = 0,
-        NAME = 1,
-        SEX = 2,
-        BIRTHDAY = 3,
-        CLASSNO = 4,
-        IDNUMBER = 5
-    };
+    explicit CommonTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent = 0);
 
     // must override
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
@@ -35,16 +28,19 @@ public:
     // optional override
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    void setStudentList(QList<Student> list);
-    QList<Student> getStudentList();
+    void setDataList(QList<P> list);
+    QList<P> getDataList();
+    void setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString);
+    QVector<CONST::HDG> getHeaderIndexs() const;
 
-signals:
+//signals:
 
-public slots:
-
-protected:
-    QStringList headerString_ = {tr("ID"), tr("Name"), tr("Sex"), tr("Birthday"), tr("Class No."), tr("ID number") };
+//public slots:
 
 private:
-    QList<Student> list_;
+    QList<P> list_ = QList<P>();
+    QStringList headerString_ = QStringList();
+
+    // column index map to CONST::HDG enum types
+    QVector<CONST::HDG> indexMap_ = QVector<CONST::HDG>(static_cast<int>(CONST::HDG::COUNT));
 };

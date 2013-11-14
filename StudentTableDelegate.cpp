@@ -9,10 +9,10 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 
-#include "studenttablemodel.h"
+#include "CommonTableModel.h"
 
-StudentTableDelegate::StudentTableDelegate(QObject *parent) :
-    QStyledItemDelegate(parent)
+StudentTableDelegate::StudentTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent /*= 0*/) :
+    QStyledItemDelegate(parent), indexMap_(indexMap)
 {
 }
 
@@ -21,30 +21,30 @@ QWidget *StudentTableDelegate::createEditor(
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
-    switch(static_cast<StudentTableModel::heading>(index.column())){
-    case StudentTableModel::heading::ID : {
+    switch(this->indexMap_.at(index.column())){
+    case CONST::HDG::ID : {
         QLineEdit * idEditor = new QLineEdit(parent);
         idEditor->setMaxLength(Person::PERSON_ID_LEN);
         return idEditor;
     }
-    case StudentTableModel::heading::NAME : {
+    case CONST::HDG::NAME : {
         QLineEdit * nameEditor = new QLineEdit(parent);
         nameEditor->setMaxLength(Person::PERSON_NAME_LEN);
         return nameEditor;
     }
-    case StudentTableModel::heading::SEX : {
+    case CONST::HDG::SEX : {
         QComboBox *sexEditor = new QComboBox(parent);
-        sexEditor->addItem(Student::getSexString(Student::Sex::Male),
-                           static_cast<u_int8_t>(Student::Sex::Male));
-        sexEditor->addItem(Student::getSexString(Student::Sex::Female),
-                           static_cast<u_int8_t>(Student::Sex::Female));
-        sexEditor->addItem(Student::getSexString(Student::Sex::Unspecified),
-                           static_cast<u_int8_t>(Student::Sex::Unspecified));
-        sexEditor->addItem(Student::getSexString(Student::Sex::Other),
-                           static_cast<u_int8_t>(Student::Sex::Other));
+        sexEditor->addItem(Person::getSexString(Person::Sex::Male),
+                           static_cast<u_int8_t>(Person::Sex::Male));
+        sexEditor->addItem(Person::getSexString(Person::Sex::Female),
+                           static_cast<u_int8_t>(Person::Sex::Female));
+        sexEditor->addItem(Person::getSexString(Person::Sex::Unspecified),
+                           static_cast<u_int8_t>(Person::Sex::Unspecified));
+        sexEditor->addItem(Person::getSexString(Person::Sex::Other),
+                           static_cast<u_int8_t>(Person::Sex::Other));
         return sexEditor;
     }
-    case StudentTableModel::heading::BIRTHDAY : {
+    case CONST::HDG::BIRTHDAY : {
         QDateEdit *birthdayEditor = new QDateEdit(parent);
         birthdayEditor->setDateRange(QDate(1880, 1, 1), QDate::currentDate());
         birthdayEditor->setDisplayFormat("yyyy-MM-dd");
@@ -52,18 +52,37 @@ QWidget *StudentTableDelegate::createEditor(
         birthdayEditor->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
         return birthdayEditor;
     }
-    case StudentTableModel::heading::CLASSNO : {
+    case CONST::HDG::CLASSNO : {
         QLineEdit * idEditor = new QLineEdit(parent);
         idEditor->setMaxLength(Student::STUDENT_CLASSNO_LEN);
         return idEditor;
     }
-    case StudentTableModel::heading::IDNUMBER : {
+    case CONST::HDG::IDNUMBER : {
         QLineEdit * idEditor = new QLineEdit(parent);
         idEditor->setMaxLength(Person::PERSON_ID_NUM_LEN);
-//        idEditor->setValidator(Person::obtainIDNumberValidator());
         idEditor->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d{17}[0-9xX]"), parent));
-//        idEditor->setInputMask("999999-99999999-999>H;_");
+        //        idEditor->setInputMask("999999-99999999-999>H;_");
         return idEditor;
+    }
+    case CONST::HDG::MAJOR: {
+        QLineEdit *majorEditor = new QLineEdit(parent);
+        majorEditor->setMaxLength(Postgraduate::POSTGRADUATE_MAJOR_LEN);
+        return majorEditor;
+    }
+    case CONST::HDG::TUTORID:{
+        QLineEdit * idEditor = new QLineEdit(parent);
+        idEditor->setMaxLength(Person::PERSON_ID_LEN);
+        return idEditor;
+    }
+    case CONST::HDG::DEPT:{
+        QLineEdit *deptEditor = new QLineEdit(parent);
+        deptEditor->setMaxLength(Teacher::TEACHER_DEPT_LEN);
+        return deptEditor;
+    }
+    case CONST::HDG::POSITION: {
+        QLineEdit *positionEditor = new QLineEdit(parent);
+        positionEditor->setMaxLength(Teacher::TEACHER_POSITION_LEN);
+        return positionEditor;
     }
     default:
         return QStyledItemDelegate::createEditor(parent,option, index);
@@ -71,8 +90,8 @@ QWidget *StudentTableDelegate::createEditor(
 }
 
 void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
-    switch(static_cast<StudentTableModel::heading>(index.column())){
-    case StudentTableModel::heading::SEX : {
+    switch(this->indexMap_.at(index.column())){
+    case CONST::HDG::SEX : {
         QComboBox *sexEditor = qobject_cast<QComboBox*>(editor);
         int idx = sexEditor->findData(index.model()->data(index, Qt::EditRole).toUInt());
         qDebug() << "found index :" << idx;
@@ -80,7 +99,7 @@ void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
         break;
     }
 
-    case StudentTableModel::heading::BIRTHDAY: {
+    case CONST::HDG::BIRTHDAY: {
         QDateEdit *birthdayEditor = qobject_cast<QDateEdit*>(editor);
         if(birthdayEditor){
             birthdayEditor->setDate(index.model()->data(index, Qt::EditRole).toDate());
@@ -91,21 +110,20 @@ void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
     }
 
     default:
-        return QStyledItemDelegate::setEditorData(editor, index);
+        QStyledItemDelegate::setEditorData(editor, index);
     }
 }
-void StudentTableDelegate::setModelData(
-        QWidget *editor,
-        QAbstractItemModel *model,
-        const QModelIndex &index) const
+
+void StudentTableDelegate::setModelData( QWidget *editor, QAbstractItemModel *model,
+                                         const QModelIndex &index) const
 {
-    switch(static_cast<StudentTableModel::heading>(index.column())){
-    case StudentTableModel::heading::SEX : {
+    switch(this->indexMap_.at(index.column())){
+    case CONST::HDG::SEX : {
         QComboBox *sexEditor = qobject_cast<QComboBox*>(editor);
         model->setData(index, sexEditor->itemData(sexEditor->currentIndex(), Qt::UserRole));
         break;
     }
-    case StudentTableModel::heading::BIRTHDAY : {
+    case CONST::HDG::BIRTHDAY : {
         QDateEdit *birthdayEditor = qobject_cast<QDateEdit*>(editor);
         model->setData(index, birthdayEditor->date());
         break;

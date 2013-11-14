@@ -23,21 +23,20 @@ SOURCES += main.cpp\
     teacher.cpp \
     postgraduate.cpp \
     teachingassistant.cpp \
-    studenttablewidget.cpp \
-    studenttablemodel.cpp \
-    StudentTableDelegate.cpp
+    StudentTableDelegate.cpp \
+    CommonTableModel.cpp \
+    CommonSortFilterProxyModel.cpp
 
 HEADERS  += mainwindow.h \
     person.h \
     student.h \
     teacher.h \
-    teachertablewidget.h \
     postgraduate.h \
     teachingassistant.h \
     const.h \
-    studenttablewidget.h \
-    studenttablemodel.h \
-    StudentTableDelegate.h
+    StudentTableDelegate.h \
+    CommonTableModel.h \
+    CommonSortFilterProxyModel.h
 
 FORMS    += mainwindow.ui
 

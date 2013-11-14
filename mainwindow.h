@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 #include <QTabWidget>
+#include <QTableView>
+
 
 namespace Ui {
 class MainWindow;
@@ -15,6 +17,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    static const int STUDENT = 0;
+    static const int TEACHER = 1;
+
 public slots:
     bool openFile();
     bool saveFile();
@@ -24,11 +29,11 @@ protected:
 
 private:
     void initUI();
+
     void addMenuBarToolBar();
 
 private:
     Ui::MainWindow *ui;
     QTabWidget *tabs;
-
 };
 

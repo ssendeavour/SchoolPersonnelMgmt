@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include <QVBoxLayout>
-#include <QTabWidget>
 
 #include <QDebug>
 #include <QFile>
@@ -15,15 +14,13 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include <QSortFilterProxyModel>
-
-#include "studenttablewidget.h"
+#include "CommonTableModel.h"
 #include "StudentTableDelegate.h"
-#include "teachertablewidget.h"
 #include "teachingassistant.h"
 
-#include "const.h"
+#include "CommonSortFilterProxyModel.h"
 
+#include "const.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,14 +42,29 @@ void MainWindow::initUI()
 {
     // student tab
     QTableView *studentView = new QTableView();
-//    QSortFilterProxyModel *sortModel = new QSortFilterProxyModel();
-//    sortModel->setSourceModel(new StudentTableModel(studentView));
-//    studentView->setModel(sortModel);
-//    studentView->setSortingEnabled(true);
-    studentView->setModel(new StudentTableModel(studentView));
+    CommonSortFilterProxyModel *sortModel = new CommonSortFilterProxyModel();
+    QStringList stuTableHeader;
+    stuTableHeader << tr("ID") << tr("Name") << tr("Sex") << tr("Birthday") << tr("ID number");
+    QVector<CONST::HDG> indexMap(static_cast<int>(CONST::HDG::COUNT));
+    indexMap[0] = CONST::HDG::ID;
+    indexMap[1] = CONST::HDG::NAME;
+    indexMap[2] = CONST::HDG::SEX;
+    indexMap[3] = CONST::HDG::BIRTHDAY;
+    indexMap[4] = CONST::HDG::IDNUMBER;
+
+//    QAbstractTableModel *model = new CommonTableModel<Student>(indexMap, stuTableHeader, studentView);
+     CommonTableModel<Student> *commonModel = new CommonTableModel<Student>(indexMap, stuTableHeader, studentView);
+     QAbstractTableModel *model = static_cast<QAbstractTableModel*>(commonModel);
+    if(!model){
+        qDebug() << "fail to dynamic cast";
+    }
+    sortModel->setSourceModel(model);
+    studentView->setModel(sortModel);
+    studentView->setSortingEnabled(true);
+    studentView->setModel(sortModel);
     studentView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     studentView->horizontalHeader()->setHighlightSections(true);
-    studentView->setItemDelegate(new StudentTableDelegate(studentView));
+    studentView->setItemDelegate(new StudentTableDelegate(indexMap, studentView));
     studentView->resizeColumnsToContents();
     studentView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     studentView->setSelectionBehavior(QAbstractItemView::SelectItems);
@@ -124,9 +136,9 @@ bool MainWindow::openFile()
                 succeed = false;
                 break;
             } else {
-                StudentTableModel *model = qobject_cast<StudentTableModel*>(studentView->model());
+                CommonTableModel<Student> *model = dynamic_cast<CommonTableModel<Student> *>(studentView->model());
                 if(model){
-                    model->setStudentList(list);
+                    model->setDataList(list);
                     studentView->resizeColumnsToContents();
                 } else {
                     displayedError = tr("Error occurred while open following file:\n\n%1\n\nreason:\n   Unknown").arg(fileName);
@@ -188,9 +200,9 @@ bool MainWindow::saveFile()
     case 0: {  // student table
         QTableView *studentView = qobject_cast<QTableView*>(currentWidget);
         if(studentView){
-            StudentTableModel *model = qobject_cast<StudentTableModel *>(studentView->model());
+            CommonTableModel<Student> *model = dynamic_cast<CommonTableModel<Student> *>(studentView->model());
             if(model){
-                if(!Student::writeToFile(file, model->getStudentList())){
+                if(!Student::writeToFile(file, model->getDataList())){
                     succeed = false;
                     displayedError =tr("Error occurred while saving to the file:\n\n%1\n\nReason:\n  Unknown").arg(file.fileName());
                     break;

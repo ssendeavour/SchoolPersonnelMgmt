@@ -24,7 +24,7 @@ public:
     static const QRegExpValidator *idNumberValidator;
 
     enum class Sex : u_int8_t {
-        Male,
+        Male = 0,
         Female,
         Unspecified,
         Other
