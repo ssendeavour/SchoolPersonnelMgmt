@@ -9,7 +9,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 
-#include "CommonTableModel.h"
+#include "StudentTableModel.h"
 
 StudentTableDelegate::StudentTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent /*= 0*/) :
     QStyledItemDelegate(parent), indexMap_(indexMap)

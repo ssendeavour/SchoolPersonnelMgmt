@@ -14,7 +14,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "CommonTableModel.h"
+#include "StudentTableModel.h"
 #include "StudentTableDelegate.h"
 #include "teachingassistant.h"
 
@@ -53,7 +53,7 @@ void MainWindow::initUI()
     indexMap[4] = CONST::HDG::IDNUMBER;
 
 //    QAbstractTableModel *model = new CommonTableModel<Student>(indexMap, stuTableHeader, studentView);
-     CommonTableModel<Student> *commonModel = new CommonTableModel<Student>(indexMap, stuTableHeader, studentView);
+     StudentTableModel<Student> *commonModel = new StudentTableModel<Student>(indexMap, stuTableHeader, studentView);
      QAbstractTableModel *model = static_cast<QAbstractTableModel*>(commonModel);
     if(!model){
         qDebug() << "fail to dynamic cast";
@@ -136,7 +136,7 @@ bool MainWindow::openFile()
                 succeed = false;
                 break;
             } else {
-                CommonTableModel<Student> *model = dynamic_cast<CommonTableModel<Student> *>(studentView->model());
+                StudentTableModel<Student> *model = dynamic_cast<StudentTableModel<Student> *>(studentView->model());
                 if(model){
                     model->setDataList(list);
                     studentView->resizeColumnsToContents();
@@ -200,7 +200,7 @@ bool MainWindow::saveFile()
     case 0: {  // student table
         QTableView *studentView = qobject_cast<QTableView*>(currentWidget);
         if(studentView){
-            CommonTableModel<Student> *model = dynamic_cast<CommonTableModel<Student> *>(studentView->model());
+            StudentTableModel<Student> *model = dynamic_cast<StudentTableModel<Student> *>(studentView->model());
             if(model){
                 if(!Student::writeToFile(file, model->getDataList())){
                     succeed = false;

@@ -1,9 +1,8 @@
-#include "CommonTableModel.h"
+#include "StudentTableModel.h"
 
 #include <QSize>
 
-template <class P>
-CommonTableModel<P>::CommonTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent /*= 0*/) :
+StudentTableModel<Student>::StudentTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent /*= 0*/) :
     QAbstractTableModel(parent)
 {
     setHeader(indexMap, headerString);
@@ -45,18 +44,15 @@ CommonTableModel<P>::CommonTableModel(QVector<CONST::HDG> indexMap, QStringList 
     list_ += list_;
 }
 
-template <class P>
-int CommonTableModel<P>::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{
+int StudentTableModel<Student>::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{
     return this->list_.size();
 }
 
-template <class P>
-int CommonTableModel<P>::columnCount(const QModelIndex & parent /*= QModelIndex()*/) const{
+int StudentTableModel<Student>::columnCount(const QModelIndex & parent /*= QModelIndex()*/) const{
     return headerString_.size();
 }
 
-template <class P>
-QVariant CommonTableModel<P>::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
+QVariant StudentTableModel<Student>::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
     if(!index.isValid()){
         return QVariant();
     }
@@ -99,8 +95,7 @@ QVariant CommonTableModel<P>::data(const QModelIndex & index, int role /*= Qt::D
     return QVariant();
 }
 
-template <class P>
-bool CommonTableModel<P>::setData(const QModelIndex & index, const QVariant & value, int role /*= Qt::EditRole*/){
+bool StudentTableModel<Student>::setData(const QModelIndex & index, const QVariant & value, int role /*= Qt::EditRole*/){
     if(index.isValid() && role == Qt::EditRole){
         bool result = false;
 //        T &t = this->list_.at(index.row());
@@ -148,33 +143,27 @@ bool CommonTableModel<P>::setData(const QModelIndex & index, const QVariant & va
     return QAbstractTableModel::setData(index, value, role);
 }
 
-template <class P>
-Qt::ItemFlags CommonTableModel<P>::flags(const QModelIndex & index) const{
+Qt::ItemFlags StudentTableModel<Student>::flags(const QModelIndex & index) const{
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
 
-template <class P>
-bool CommonTableModel<P>::insertRows(int row, int count, const QModelIndex &parent){
+bool StudentTableModel<Student>::insertRows(int row, int count, const QModelIndex &parent){
     return true;
 }
 
-template <class P>
-bool CommonTableModel<P>::removeRows(int row, int count, const QModelIndex &parent){
+bool StudentTableModel<Student>::removeRows(int row, int count, const QModelIndex &parent){
     return true;
 }
 
-template <class P>
-bool CommonTableModel<P>::insertColumns(int column, int count, const QModelIndex &parent){
+bool StudentTableModel<Student>::insertColumns(int column, int count, const QModelIndex &parent){
     return true;
 }
 
-template <class P>
-bool CommonTableModel<P>::removeColumns(int column, int count, const QModelIndex &parent){
+bool StudentTableModel<Student>::removeColumns(int column, int count, const QModelIndex &parent){
     return true;
 }
 
-template <class P>
-QVariant CommonTableModel<P>::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const{
+QVariant StudentTableModel<Student>::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const{
     if(role != Qt::DisplayRole){
         return QVariant();
     }
@@ -185,20 +174,17 @@ QVariant CommonTableModel<P>::headerData(int section, Qt::Orientation orientatio
     }
 }
 
-template <class P>
-void CommonTableModel<P>::setDataList(QList<P> list){
+void StudentTableModel<Student>::setDataList(QList<Student> list){
     beginResetModel();
     this->list_ = list;
     endResetModel();
 }
 
-template <class P>
-QList<P> CommonTableModel<P>::getDataList(){
+QList<Student> StudentTableModel<Student>::getDataList(){
     return this->list_;
 }
 
-template <class P>
-void CommonTableModel<P>::setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString){
+void StudentTableModel<Student>::setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString){
     if(this->indexMap_.size() == hdgMap.size()){
         this->indexMap_ = hdgMap;
         this->headerString_ = headerString;
@@ -207,7 +193,6 @@ void CommonTableModel<P>::setHeader(const QVector<CONST::HDG> hdgMap, const QStr
     }
 }
 
-template <class P>
-QVector<CONST::HDG> CommonTableModel<P>::getHeaderIndexs() const{
+QVector<CONST::HDG> StudentTableModel<Student>::getHeaderIndexs() const{
     return this->indexMap_;
 }

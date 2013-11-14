@@ -8,11 +8,11 @@
 #include "teachingassistant.h"
 
 template <class P>
-class CommonTableModel : public QAbstractTableModel
+class StudentTableModel : public QAbstractTableModel
 {
 //    Q_OBJECT
 public:
-    explicit CommonTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent = 0);
+    explicit StudentTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent = 0);
 
     // must override
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
