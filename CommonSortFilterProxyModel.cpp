@@ -8,6 +8,10 @@ CommonSortFilterProxyModel::CommonSortFilterProxyModel(QObject *parent) :
 {
 }
 
+CommonSortFilterProxyModel::~CommonSortFilterProxyModel(){
+
+}
+
 bool CommonSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     QVariant leftData = sourceModel()->data(left);

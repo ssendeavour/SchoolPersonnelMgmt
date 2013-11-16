@@ -11,9 +11,9 @@ public:
     Postgraduate(const QString classNo = QString(),
                  const QString name_ = QString(),
                  const QString id_ = QString(),
-                 const QString idNum_ = QString(),
+                 const QString idNum_ = QString("000000000000000000"),
                  const Sex sex_ = Sex::Unspecified,
-                 const QDate birthDay_ = QDate(0,0,0),
+                 const QDate birthDay_ = QDate(1880,1,1),
                  const QString major = QString(),
                  const QString tutorId_ = QString());
 

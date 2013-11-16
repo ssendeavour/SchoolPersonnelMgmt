@@ -2,9 +2,9 @@
 
 Teacher::Teacher(const QString name /*= QString()*/,
         const QString id /*= QString()*/,
-        const QString idNum /*= QString()*/,
+        const QString idNum /*= QString("000000000000000000")*/,
         const Sex sex /*= QString()*/,
-        const QDate birthDay /*= QDate(0,0,0)*/,
+        const QDate birthDay /*= QDate(1880,1,1)*/,
         const QString dept /*= QString()*/,
         const QString position /*= QString()*/):
     Person(name, id, idNum, sex, birthDay)

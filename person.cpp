@@ -4,9 +4,9 @@
 
 Person::Person(const QString name /*= QString()*/,
                const QString id /*= QString()*/,
-               const QString idNum/* = QString()*/,
+               const QString idNum/* = QString("000000000000000000")*/,
                const Sex sex /*= Sex::Unspecified*/,
-               const QDate birthDay /*= QDate(0,0,0)*/) : sex_(sex)
+               const QDate birthDay /*= QDate(1880,1,1)*/) : sex_(sex)
 {
     if(!setName(name)){
         qDebug() << this->errorString_;
