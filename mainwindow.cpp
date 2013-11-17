@@ -125,6 +125,10 @@ void MainWindow::addMenuBarToolBar()
     connect(clearDataAction, &QAction::triggered, this, &MainWindow::clearAllData);
     editMenu->addAction(clearDataAction);
 
+    QAction *hideSomeRowAction = new QAction(tr("&Hide some row"), this);
+    connect(hideSomeRowAction, &QAction::triggered, this, &MainWindow::hideRows);
+    editMenu->addAction(hideSomeRowAction);
+
     ui->mainToolBar->addAction(openAction);
     ui->mainToolBar->addAction(saveAction);
     ui->mainToolBar->addSeparator();
@@ -357,5 +361,11 @@ void MainWindow::deleteRows(){
 }
 
 void MainWindow::openFilterDialog(){
+}
 
+
+void MainWindow::hideRows(){
+    this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(1, true);
+    this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(3, true);
+    this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(4, true);
 }

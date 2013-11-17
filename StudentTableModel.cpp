@@ -153,6 +153,56 @@ QVector<CONST::HDG> StudentTableModel::getHeaderIndexs() const{
     return this->indexMap_;
 }
 
+bool dateLessThan(const Student &s1, const Student &s2){
+    return s1.getBirthday() >= s2.getBirthday();
+}
+
 void StudentTableModel::sort(int column, Qt::SortOrder order){
-    qDebug() << column << ", order: " << order;
+    emit layoutAboutToBeChanged();
+    switch(this->indexMap_[column]){
+    case CONST::HDG::ID:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getId() < b.getId(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getId() >= b.getId(); });
+        }
+        break;
+    case CONST::HDG::NAME:
+        if(Qt::AscendingOrder == order){
+            Student s;
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getName() < b.getName(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getName() >= b.getName(); });
+        }
+        break;
+    case CONST::HDG::SEX:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getSex() < b.getSex(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getSex() >= b.getSex(); });
+        }
+        break;
+    case CONST::HDG::BIRTHDAY:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getBirthday() < b.getBirthday(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getBirthday() >= b.getBirthday(); });
+        }
+        break;
+    case CONST::HDG::IDNUMBER:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getIdNumber() < b.getIdNumber(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getIdNumber() >= b.getIdNumber(); });
+        }
+        break;
+    case CONST::HDG::CLASSNO:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getClassNo() < b.getClassNo(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getClassNo() >= b.getClassNo(); });
+        }
+        break;
+    }
+    emit layoutChanged();
 }

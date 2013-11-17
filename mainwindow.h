@@ -41,6 +41,9 @@ public slots:
 
     void openFilterDialog();
 
+    // for test
+    void hideRows();
+
 protected:
     bool openStudentFile(QFile &file, QString &error);
     bool saveStudentFile(QFile &file, QString &error);

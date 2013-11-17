@@ -44,8 +44,9 @@ public:
 public:
 
     static QString getSexString(Person::Sex sex);
-    virtual QString toString() const;
     static const QRegExpValidator* obtainIDNumberValidator();
+
+    virtual QString toString() const;
 
     QString errorString() const;
 
