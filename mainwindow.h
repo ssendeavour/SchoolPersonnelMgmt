@@ -39,6 +39,8 @@ public slots:
     void insertRowBefore();
     void deleteRows();
 
+    void openFilterDialog();
+
 protected:
     bool openStudentFile(QFile &file, QString &error);
     bool saveStudentFile(QFile &file, QString &error);
@@ -54,7 +56,7 @@ private:
     QTabWidget *tabs_;
     // pointer to array of pointers
     QTableView *tableView_[TAB_NUMBER];
-    CommonSortFilterProxyModel *sortFilterProxyModel_[TAB_NUMBER];
+//    CommonSortFilterProxyModel *sortFilterProxyModel_[TAB_NUMBER];
 
     StudentTableModel *studentTableModel_;
 };

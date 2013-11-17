@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabs_(new QTabWidget(this))
 {
     ui->setupUi(this);
-    setWindowTitle(tr("人事管理系统"));
+    setWindowTitle(tr("Personnel Management System"));
     initUI();
     addMenuBarToolBar();
 }
@@ -41,7 +41,6 @@ void MainWindow::initUI()
 {
     for(int i=0; i<TAB_NUMBER; ++i){
         this->tableView_[i] = new QTableView(this);
-        this->sortFilterProxyModel_[i] = new CommonSortFilterProxyModel(this);
         this->tableView_[i]->setSortingEnabled(true);
         this->tableView_[i]->setSelectionMode(QAbstractItemView::ExtendedSelection);
         this->tableView_[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -73,8 +72,8 @@ void MainWindow::initStudentTab()
     indexMap[4] = CONST::HDG::IDNUMBER;
     this->studentTableModel_ = new StudentTableModel(
                 indexMap, stuTableHeader, this);
-    this->sortFilterProxyModel_[index]->setSourceModel(this->studentTableModel_);
-    this->tableView_[index]->setModel(this->sortFilterProxyModel_[index]);
+//    this->sortFilterProxyModel_[index]->setSourceModel(this->studentTableModel_);
+    this->tableView_[index]->setModel(this->studentTableModel_);
     this->tableView_[index]->setItemDelegate(new StudentTableDelegate(indexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
 }
@@ -159,8 +158,6 @@ bool MainWindow::openFile()
     }
 
     QString error = "";
-//    this->tableView_[index]->setSortingEnabled(false);
-//    this->sortFilterProxyModel_[index]->setDynamicSortFilter(false);
     switch (static_cast<MainWindow::TAB>(index)) {
     case MainWindow::TAB::STUDENT: {  // student table
         succeed = openStudentFile(file, error);
@@ -176,8 +173,6 @@ bool MainWindow::openFile()
     } else {
         QMessageBox::warning(this, tr("Error"), error);
     }
-//    this->tableView_[index]->setSortingEnabled(true);
-//    this->sortFilterProxyModel_[index]->setDynamicSortFilter(true);
     return succeed;
 }
 
@@ -247,27 +242,68 @@ bool MainWindow::saveStudentFile(QFile &file, QString &error){
 
 void MainWindow::clearAllData()
 {
-    studentTableModel_->setDataList(QList<Student>());
+    MainWindow::TAB tab = static_cast<MainWindow::TAB>(this->tabs_->currentIndex());
+    switch(tab){
+    case MainWindow::TAB::STUDENT:
+        this->studentTableModel_->setDataList(QList<Student>());
+        break;
+
+    case MainWindow::TAB::TEACHER:
+        break;
+
+    case MainWindow::TAB::POSTGRAD:
+        break;
+
+    case MainWindow::TAB::TA:
+        break;
+    }
 }
 
 void MainWindow::addNewRow()
 {
     int tabIndex = this->tabs_->currentIndex();
-    // see QSortFilterProxyModel dynamicSortFilter document.
-    // you should not update the source model through the proxy model when dynamicSortFilter is true
-//    this->sortFilterProxyModel_[tabIndex]->setDynamicSortFilter(false);
-    this->sortFilterProxyModel_[tabIndex]->insertRows(this->sortFilterProxyModel_[tabIndex]->rowCount(), 1);
-//    this->sortFilterProxyModel_[tabIndex]->setDynamicSortFilter(true);
+    switch(static_cast<MainWindow::TAB>(tabIndex)){
+    case MainWindow::TAB::STUDENT:
+        this->studentTableModel_->insertRows(this->studentTableModel_->rowCount(), 1);
+        break;
+
+    case MainWindow::TAB::TEACHER:
+        break;
+
+    case MainWindow::TAB::POSTGRAD:
+        break;
+
+    case MainWindow::TAB::TA:
+        break;
+    }
     this->tableView_[tabIndex]->resizeColumnsToContents();
 }
 
 void MainWindow::insertRowBefore()
 {
     int tabIndex = this->tabs_->currentIndex();
+    MainWindow::TAB tab = static_cast<MainWindow::TAB>(tabIndex);
     QItemSelectionModel *selectionModel = this->tableView_[tabIndex]->selectionModel();
     if(!selectionModel->hasSelection()){
-        if(this->sortFilterProxyModel_[tabIndex]->rowCount() > 0){
-            QMessageBox::warning(this, tr("No item selected"), tr("Please select a row before which new row will be inserted, or add one first if no row exists."));
+        int rowCount = 0;
+        switch (tab){
+        case MainWindow::TAB::STUDENT:
+            rowCount = this->studentTableModel_->rowCount();
+            break;
+
+        case MainWindow::TAB::TEACHER:
+            break;
+
+        case MainWindow::TAB::POSTGRAD:
+            break;
+
+        case MainWindow::TAB::TA:
+            break;
+        }
+
+        if(rowCount > 0){
+            QMessageBox::warning(this, tr("No row selected"),
+                     tr("Please select a row before which new row will be inserted"));
         } else {
             addNewRow();
         }
@@ -277,24 +313,49 @@ void MainWindow::insertRowBefore()
         QMessageBox::warning(this, tr("Multiple rows selected"), tr("Please select only one row."));
         return;
     }
-    // see QSortFilterProxyModel dynamicSortFilter document.
-    // you should not update the source model through the proxy model when dynamicSortFilter is true
-    qDebug() << "row: " << selectionModel->selectedRows().at(0).row();
-//    this->sortFilterProxyModel_[tabIndex]->setDynamicSortFilter(false);
-    this->tableView_[tabIndex]->resizeColumnsToContents();
-    this->sortFilterProxyModel_[tabIndex]->insertRows(selectionModel->selectedRows().at(0).row(), 1);
-//    this->sortFilterProxyModel_[tabIndex]->setDynamicSortFilter(true);
+    switch(tab){
+    case MainWindow::TAB::STUDENT:
+        this->studentTableModel_->insertRows(selectionModel->selectedRows().at(0).row(), 1);
+        this->tableView_[tabIndex]->resizeColumnsToContents();
+        break;
+
+    case MainWindow::TAB::TEACHER:
+        break;
+
+    case MainWindow::TAB::POSTGRAD:
+        break;
+
+    case MainWindow::TAB::TA:
+        break;
+    }
 }
 
 void MainWindow::deleteRows(){
-    int tabIndex = this->tabs_->currentIndex();
-    QItemSelectionModel *selectionModel = this->tableView_[tabIndex]->selectionModel();
+    MainWindow::TAB tab = static_cast<MainWindow::TAB>(this->tabs_->currentIndex());
+    QItemSelectionModel *selectionModel = this->tableView_[this->tabs_->currentIndex()]->selectionModel();
     if(!selectionModel->hasSelection()){
-        QMessageBox::warning(this, tr("No item selected"), tr("Please select at least one row"));
+        QMessageBox::warning(this, tr("No row selected"), tr("Please select at least one row"));
         return;
     }
    QModelIndexList indexList = selectionModel->selectedRows();
-   for(QModelIndex index : indexList){
-       this->sortFilterProxyModel_[tabIndex]->removeRows(index.row(), 1);
-   }
+    switch(tab){
+    case MainWindow::TAB::STUDENT:
+       for(QModelIndex index : indexList){
+           this->studentTableModel_->removeRows(index.row(), 1);
+       }
+        break;
+
+    case MainWindow::TAB::TEACHER:
+        break;
+
+    case MainWindow::TAB::POSTGRAD:
+        break;
+
+    case MainWindow::TAB::TA:
+        break;
+    }
+}
+
+void MainWindow::openFilterDialog(){
+
 }
