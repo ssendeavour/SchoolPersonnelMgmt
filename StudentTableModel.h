@@ -31,6 +31,8 @@ public:
     // optional override
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
+    void sort(int column, Qt::SortOrder order);
+
     void setDataList(QList<Student> list);
     QList<Student> getDataList();
     void setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString);

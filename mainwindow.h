@@ -3,10 +3,12 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QTableView>
+#include <QDialog>
 
 #include "StudentTableModel.h"
 #include "StudentTableDelegate.h"
 #include "CommonSortFilterProxyModel.h"
+
 
 namespace Ui {
 class MainWindow;

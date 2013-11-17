@@ -42,9 +42,7 @@ void MainWindow::initUI()
     for(int i=0; i<TAB_NUMBER; ++i){
         this->tableView_[i] = new QTableView(this);
         this->sortFilterProxyModel_[i] = new CommonSortFilterProxyModel(this);
-//        this->tableView_[i]->setSortingEnabled(true);
-//        this->sortFilterProxyModel_[i]->setDynamicSortFilter(true);
-//        this->sortFilterProxyModel_[i]->setSortLocaleAware(true);
+        this->tableView_[i]->setSortingEnabled(true);
         this->tableView_[i]->setSelectionMode(QAbstractItemView::ExtendedSelection);
         this->tableView_[i]->setSelectionBehavior(QAbstractItemView::SelectRows);
     }
@@ -111,7 +109,7 @@ void MainWindow::addMenuBarToolBar()
     connect(addRowAction, &QAction::triggered, this, &MainWindow::addNewRow);
     editMenu->addAction(addRowAction);
 
-    QAction *insertRowAction = new QAction(tr("&Insert row Before"), this);
+    QAction *insertRowAction = new QAction(tr("&Insert row before"), this);
     insertRowAction->setToolTip(tr("Insert a new row before selected row"));
     insertRowAction->setShortcut(Qt::CTRL + Qt::Key_I);
     connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRowBefore);
@@ -137,6 +135,9 @@ void MainWindow::addMenuBarToolBar()
     ui->mainToolBar->addAction(clearDataAction);
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction(quitAction);
+
+    QStatusBar *statusBar = new QStatusBar(this);
+    setStatusBar(statusBar);
 }
 
 bool MainWindow::openFile()
@@ -158,8 +159,8 @@ bool MainWindow::openFile()
     }
 
     QString error = "";
-    this->tableView_[index]->setSortingEnabled(false);
-    this->sortFilterProxyModel_[index]->setDynamicSortFilter(false);
+//    this->tableView_[index]->setSortingEnabled(false);
+//    this->sortFilterProxyModel_[index]->setDynamicSortFilter(false);
     switch (static_cast<MainWindow::TAB>(index)) {
     case MainWindow::TAB::STUDENT: {  // student table
         succeed = openStudentFile(file, error);
@@ -175,8 +176,8 @@ bool MainWindow::openFile()
     } else {
         QMessageBox::warning(this, tr("Error"), error);
     }
-    this->tableView_[index]->setSortingEnabled(true);
-    this->sortFilterProxyModel_[index]->setDynamicSortFilter(true);
+//    this->tableView_[index]->setSortingEnabled(true);
+//    this->sortFilterProxyModel_[index]->setDynamicSortFilter(true);
     return succeed;
 }
 

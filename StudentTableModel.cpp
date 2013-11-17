@@ -13,10 +13,12 @@ int StudentTableModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) 
 }
 
 int StudentTableModel::columnCount(const QModelIndex & parent /*= QModelIndex()*/) const{
-    return headerString_.size();
+    return this->headerString_.size();
 }
 
 QVariant StudentTableModel::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
+    //* NOTE: if used across days, Today string will be inaccurate.
+    static QString birtyTooltip = "Valid date range: 1880-01-01 to Today(" + QDate::currentDate().toString("yyyy-MM-dd") + ")";
     if(!index.isValid()){
         return QVariant();
     }
@@ -44,6 +46,15 @@ QVariant StudentTableModel::data(const QModelIndex & index, int role /*= Qt::Dis
             return t.getClassNo();
         case CONST::HDG::IDNUMBER:
             return t.getIdNumber();
+        default:
+            return QVariant();
+        }
+    } else if (role == Qt::ToolTipRole) {
+        switch(this->indexMap_.at(index.column())){
+        case CONST::HDG::BIRTHDAY:
+            return birtyTooltip;
+        case CONST::HDG::IDNUMBER:
+            return "18 digits or 17 digits with letter X";
         default:
             return QVariant();
         }
@@ -140,4 +151,8 @@ void StudentTableModel::setHeader(const QVector<CONST::HDG> hdgMap, const QStrin
 
 QVector<CONST::HDG> StudentTableModel::getHeaderIndexs() const{
     return this->indexMap_;
+}
+
+void StudentTableModel::sort(int column, Qt::SortOrder order){
+    qDebug() << column << ", order: " << order;
 }
