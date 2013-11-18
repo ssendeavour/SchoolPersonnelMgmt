@@ -14,7 +14,8 @@ class StudentTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit StudentTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent = 0);
+    explicit StudentTableModel(QVector<CONST::HDG> indexMap, QObject *parent = 0);
+    ~StudentTableModel();
 
     // SortProxyModel using this model as source model should override these same functions
     // must override
@@ -33,7 +34,6 @@ public:
 
     void setDataList(QList<Student> list);
     QList<Student> getDataList();
-    void setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString);
     QVector<CONST::HDG> getHeaderIndexs() const;
 
 signals:
@@ -42,7 +42,6 @@ public slots:
 
 private:
     QList<Student> list_ = QList<Student>();
-    QStringList headerString_ = QStringList();
 
     // column index map to CONST::HDG enum types
     QVector<CONST::HDG> indexMap_ = QVector<CONST::HDG>(static_cast<int>(CONST::HDG::COUNT));

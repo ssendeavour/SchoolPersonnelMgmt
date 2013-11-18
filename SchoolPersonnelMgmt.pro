@@ -15,6 +15,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SchoolPersonnelMgmt
 TEMPLATE = app
 
+# ensure every string are wrapped with QObject::tr()(translate) or QLatin1String()(not translate)
+#DEFINES += QT_NO_CAST_FROM_ASCII
 
 SOURCES += main.cpp\
         mainwindow.cpp \

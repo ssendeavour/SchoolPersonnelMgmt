@@ -62,21 +62,15 @@ void MainWindow::initStudentTab()
 {
     const int index = static_cast<int>(MainWindow::TAB::STUDENT);
     QStringList stuTableHeader;
-    QVector<CONST::HDG> indexMap(static_cast<int>(CONST::HDG::COUNT));
-    stuTableHeader.append(tr("ID"));
-    indexMap[0] = CONST::HDG::ID;
-    stuTableHeader.append(tr("Name"));
-    indexMap[1] = CONST::HDG::NAME;
-    stuTableHeader.append(tr("Sex"));
-    indexMap[2] = CONST::HDG::SEX;
-    stuTableHeader.append(tr("Birthday"));
-    indexMap[3] = CONST::HDG::BIRTHDAY;
-    stuTableHeader.append(tr("ID number"));
-    indexMap[4] = CONST::HDG::IDNUMBER;
-    this->studentTableModel_ = new StudentTableModel(
-                indexMap, stuTableHeader, this);
+    QVector<CONST::HDG> headerIndexMap(5);
+    headerIndexMap[0] = CONST::HDG::ID;
+    headerIndexMap[1] = CONST::HDG::NAME;
+    headerIndexMap[2] = CONST::HDG::SEX;
+    headerIndexMap[3] = CONST::HDG::BIRTHDAY;
+    headerIndexMap[4] = CONST::HDG::IDNUMBER;
+    this->studentTableModel_ = new StudentTableModel(headerIndexMap, this);
     this->tableView_[index]->setModel(this->studentTableModel_);
-    this->tableView_[index]->setItemDelegate(new StudentTableDelegate(indexMap, this->tableView_[index]));
+    this->tableView_[index]->setItemDelegate(new StudentTableDelegate(headerIndexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
 }
 
@@ -390,8 +384,25 @@ void MainWindow::deleteRows(){
 }
 
 void MainWindow::openFilterDialog(){
+    QVector<CONST::HDG> headingIndex;
+    MainWindow::TAB tab = static_cast<MainWindow::TAB>(this->tabs_->currentIndex());
+    switch(tab){
+    case MainWindow::TAB::STUDENT:
+        headingIndex = this->studentTableModel_->getHeaderIndexs();
+        break;
+
+    case MainWindow::TAB::TEACHER:
+        break;
+
+    case MainWindow::TAB::POSTGRAD:
+        break;
+
+    case MainWindow::TAB::TA:
+        break;
+    }
+
     // don't specify a parent, so that this dialog has its own icon in TaskBar area
-    StudentFilterDialog *dialog = new StudentFilterDialog();
+    StudentFilterDialog *dialog = new StudentFilterDialog(headingIndex);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     // show as non-model dialog
     dialog->show();

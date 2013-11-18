@@ -7,7 +7,6 @@
 
 #include "StudentTableModel.h"
 #include "StudentTableDelegate.h"
-#include "CommonSortFilterProxyModel.h"
 
 
 namespace Ui {

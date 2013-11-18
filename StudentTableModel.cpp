@@ -3,10 +3,13 @@
 #include <QSize>
 #include <functional>
 
-StudentTableModel::StudentTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent /*= 0*/) :
-    QAbstractTableModel(parent)
-{
-    setHeader(indexMap, headerString);
+StudentTableModel::StudentTableModel(QVector<CONST::HDG> indexMap,  QObject *parent /*= 0*/) :
+    QAbstractTableModel(parent), indexMap_(indexMap) {
+
+}
+
+StudentTableModel::~StudentTableModel(){
+
 }
 
 int StudentTableModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{
@@ -14,7 +17,7 @@ int StudentTableModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) 
 }
 
 int StudentTableModel::columnCount(const QModelIndex & parent /*= QModelIndex()*/) const{
-    return this->headerString_.size();
+    return this->indexMap_.size();
 }
 
 QVariant StudentTableModel::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
@@ -130,7 +133,7 @@ QVariant StudentTableModel::headerData(int section, Qt::Orientation orientation,
     if(orientation == Qt::Vertical){
         return section;
     } else {
-        return this->headerString_.at(section);
+        return CONST::getHeadingString(this->indexMap_.at(section));
     }
 }
 
@@ -142,15 +145,6 @@ void StudentTableModel::setDataList(QList<Student> list){
 
 QList<Student> StudentTableModel::getDataList(){
     return this->list_;
-}
-
-void StudentTableModel::setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString){
-    if(this->indexMap_.size() == hdgMap.size()){
-        this->indexMap_ = hdgMap;
-        this->headerString_ = headerString;
-    } else {
-        qDebug() << "Warning: hdgMap size mismatch, size should be static_cast<int>(CONST::HDG::COUNT), header not set";
-    }
 }
 
 QVector<CONST::HDG> StudentTableModel::getHeaderIndexs() const{

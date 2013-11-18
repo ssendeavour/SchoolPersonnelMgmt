@@ -1,9 +1,11 @@
 #pragma once
 
 #include <QtGlobal>
+#include <QObject>
 #include <cstdint>
 
 namespace CONST{
+
 static const u_int32_t MAGIC_NUMBER = 0x33220F0E;
 
 static const u_int32_t FILE_TYPE_STUDENT = 0x1;
@@ -32,4 +34,34 @@ enum class HDG{
     POSITION = 9,
     COUNT = 10  // COUNT should be the number of elements in the enum, except COUNT
 };
+
+inline QString getHeadingString(CONST::HDG headingIndex){
+    switch (headingIndex) {
+    case CONST::HDG::ID:
+        return QObject::tr("ID");
+    case CONST::HDG::NAME:
+        return QObject::tr("Name");
+    case CONST::HDG::SEX:
+        return QObject::tr("Sex");
+    case CONST::HDG::BIRTHDAY:
+        return QObject::tr("Birthday");
+    case CONST::HDG::CLASSNO:
+        return QObject::tr("Class No.");
+    case CONST::HDG::IDNUMBER:
+        return QObject::tr("ID Number");
+    case CONST::HDG::MAJOR:
+        return QObject::tr("Major");
+    case CONST::HDG::TUTORID:
+        return QObject::tr("Tutor's ID");
+    case CONST::HDG::DEPT:
+        return QObject::tr("Department");
+    case CONST::HDG::POSITION:
+        return QObject::tr("Position");
+    default:
+        return QObject::tr("Error");
+    }
 }
+
+} // end namespace CONST
+
+
