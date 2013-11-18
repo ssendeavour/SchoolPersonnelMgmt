@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     postgraduate.cpp \
     teachingassistant.cpp \
     StudentTableDelegate.cpp \
-    CommonSortFilterProxyModel.cpp \
     StudentTableModel.cpp \
     StudentFilterDialog.cpp
 
@@ -36,7 +35,6 @@ HEADERS  += mainwindow.h \
     teachingassistant.h \
     const.h \
     StudentTableDelegate.h \
-    CommonSortFilterProxyModel.h \
     StudentTableModel.h \
     StudentFilterDialog.h
 
