@@ -59,7 +59,9 @@ private:
     QTabWidget *tabs_;
     // pointer to array of pointers
     QTableView *tableView_[TAB_NUMBER];
-//    CommonSortFilterProxyModel *sortFilterProxyModel_[TAB_NUMBER];
+
+    // this dialog is not added to MainWindow as it's child, so that a icon will show in taskbar
+//    QDialog *filterDialog;
 
     StudentTableModel *studentTableModel_;
 };

@@ -26,8 +26,8 @@ public:
     enum class Sex : u_int8_t {
         Male = 0,
         Female,
-        Unspecified,
-        Other
+        Other,
+        Unspecified
     };
 
     Person(const QString name_ = QString(),

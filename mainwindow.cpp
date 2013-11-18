@@ -18,6 +18,7 @@
 #include <QItemSelectionModel>
 
 #include "teachingassistant.h"
+#include "StudentFilterDialog.h"
 
 #include "const.h"
 
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     tabs_(new QTabWidget(this))
+//    filterDialog(nullptr)
 {
     ui->setupUi(this);
     setWindowTitle(tr("Personnel Management System"));
@@ -34,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+//    delete this->filterDialog;
     delete ui;
 }
 
@@ -72,7 +75,6 @@ void MainWindow::initStudentTab()
     indexMap[4] = CONST::HDG::IDNUMBER;
     this->studentTableModel_ = new StudentTableModel(
                 indexMap, stuTableHeader, this);
-//    this->sortFilterProxyModel_[index]->setSourceModel(this->studentTableModel_);
     this->tableView_[index]->setModel(this->studentTableModel_);
     this->tableView_[index]->setItemDelegate(new StudentTableDelegate(indexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
@@ -119,7 +121,14 @@ void MainWindow::addMenuBarToolBar()
     connect(deleteRowsAction, &QAction::triggered, this, &MainWindow::deleteRows);
     editMenu->addAction(deleteRowsAction);
 
-    fileMenu->addSeparator();
+//    editMenu->addSeparator();
+
+    QAction *filterAction = new QAction(tr("&Find && Filter"), this);
+    filterAction->setShortcut(QKeySequence::Find);
+    connect(filterAction, &QAction::triggered, this, &MainWindow::openFilterDialog);
+    editMenu->addAction(filterAction);
+
+    editMenu->addSeparator();
 
     QAction *clearDataAction = new QAction(tr("&C&lear data"), this);
     connect(clearDataAction, &QAction::triggered, this, &MainWindow::clearAllData);
@@ -136,6 +145,7 @@ void MainWindow::addMenuBarToolBar()
     ui->mainToolBar->addAction(insertRowAction);
     ui->mainToolBar->addAction(deleteRowsAction);
     ui->mainToolBar->addAction(clearDataAction);
+    ui->mainToolBar->addAction(filterAction);
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction(quitAction);
 
@@ -342,12 +352,31 @@ void MainWindow::deleteRows(){
         return;
     }
    QModelIndexList indexList = selectionModel->selectedRows();
-    switch(tab){
-    case MainWindow::TAB::STUDENT:
-       for(QModelIndex index : indexList){
-           this->studentTableModel_->removeRows(index.row(), 1);
+   // sort selected row from high index to low index, and delete them in the same order
+   qSort(indexList.begin(), indexList.end(), [](QModelIndex &left, QModelIndex &right){return left.row() >= right.row();});
+   // detect consecutive selections
+   QList<QPair<int, int>> pairs = QList<QPair<int, int>>();
+   int start = indexList.at(0).row();
+   int current = start;
+   for(int i=0; i < indexList.size(); ++i){
+       int row = indexList.at(i).row();
+       if(row - current <= 0 && row - current >= -1){
+           current = row;
+       } else {
+           pairs.append(QPair<int, int>(current, start - current + 1));
+           start = row;
+           current = start;
        }
+   }
+   pairs.append(QPair<int, int>(current, start - current + 1));
+
+    switch(tab){
+    case MainWindow::TAB::STUDENT: {
+        for(QPair<int, int> pair : pairs){
+            this->studentTableModel_->removeRows(pair.first, pair.second);
+        }
         break;
+    }
 
     case MainWindow::TAB::TEACHER:
         break;
@@ -361,8 +390,12 @@ void MainWindow::deleteRows(){
 }
 
 void MainWindow::openFilterDialog(){
+    // don't specify a parent, so that this dialog has its own icon in TaskBar area
+    StudentFilterDialog *dialog = new StudentFilterDialog();
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    // show as non-model dialog
+    dialog->show();
 }
-
 
 void MainWindow::hideRows(){
     this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(1, true);

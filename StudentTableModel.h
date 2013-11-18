@@ -25,8 +25,6 @@ public:
     Qt::ItemFlags flags(const QModelIndex & index) const override;
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-//    bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
-//    bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override;
 
     // optional override
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;

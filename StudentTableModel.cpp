@@ -1,6 +1,7 @@
 #include "StudentTableModel.h"
 
 #include <QSize>
+#include <functional>
 
 StudentTableModel::StudentTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent /*= 0*/) :
     QAbstractTableModel(parent)
@@ -86,6 +87,8 @@ bool StudentTableModel::setData(const QModelIndex & index, const QVariant & valu
         case CONST::HDG::IDNUMBER:
             result = t.setIdNumber(value.toString());
             break;
+        default:
+            break;
         }
         if(result){
             emit dataChanged(index, index);
@@ -100,7 +103,7 @@ Qt::ItemFlags StudentTableModel::flags(const QModelIndex & index) const{
 }
 
 bool StudentTableModel::insertRows(int row, int count, const QModelIndex &parent) {
-    // note: [row, row+count-1], not [row, row+count)
+    // NOTE: [row, row+count-1], not [row, row+count)
     beginInsertRows(parent, row, row + count - 1);
     for(int i = row; i < row + count; ++i){
         this->list_.insert(i, Student());
@@ -109,10 +112,11 @@ bool StudentTableModel::insertRows(int row, int count, const QModelIndex &parent
     return true;
 }
 
+// remove from high index to low index
 bool StudentTableModel::removeRows(int row, int count, const QModelIndex &parent) {
-    // note [row, row+count-1], not [row, row+count)
+    // NOTE: [row, row+count-1], not [row, row+count)
     beginRemoveRows(parent, row, row + count -1);
-    for(int i = row + count -1; i >= row; i--){
+    for(int i = row + count - 1; i >= row; i--){
         this->list_.removeAt(i);
     }
     endRemoveRows();
@@ -158,6 +162,8 @@ bool dateLessThan(const Student &s1, const Student &s2){
 }
 
 void StudentTableModel::sort(int column, Qt::SortOrder order){
+    // std::function is about two times slower than lambda expression
+//    std::function<bool(Student, Student)> func;
     emit layoutAboutToBeChanged();
     switch(this->indexMap_[column]){
     case CONST::HDG::ID:
@@ -202,6 +208,8 @@ void StudentTableModel::sort(int column, Qt::SortOrder order){
         } else {
             qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getClassNo() >= b.getClassNo(); });
         }
+        break;
+    default:
         break;
     }
     emit layoutChanged();
