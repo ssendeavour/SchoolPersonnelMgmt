@@ -42,7 +42,7 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     // Frame 0: string filter
     QVBoxLayout *stringLayout = new QVBoxLayout;
     this->filterLineEdit_ = new QLineEdit(this);
-    connect(this->filterLineEdit_, &QLineEdit::textChanged, &StudentFilterDialog::filterTextChanged);
+    connect(this->filterLineEdit_, &QLineEdit::textChanged, this, &StudentFilterDialog::filterTextChanged);
     this->filterLineEdit_->setPlaceholderText(tr("what are you looking for ?"));
     stringLayout->addWidget(this->filterLineEdit_);
 
