@@ -94,7 +94,6 @@ void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
     case CONST::HDG::SEX : {
         QComboBox *sexEditor = qobject_cast<QComboBox*>(editor);
         int idx = sexEditor->findData(index.model()->data(index, Qt::EditRole).toUInt());
-        qDebug() << "found index :" << idx;
         sexEditor->setCurrentIndex(idx);
         break;
     }

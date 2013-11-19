@@ -2,16 +2,19 @@
 
 #include <QDialog>
 #include <QVector>
+#include <QDate>
 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGroupBox>
 #include <QComboBox>
-#include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QCheckBox>
+#include <QStackedLayout>
+#include <QListWidget>
+#include <QDateEdit>
+
 
 #include "const.h"
+#include "person.h"
 
 class StudentFilterDialog : public QDialog
 {
@@ -20,12 +23,27 @@ public:
     explicit StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *parent = 0);
 
 signals:
+    void filterColumnChanged(const CONST::HDG &column);
+    void filterTextChanged(const QString &newText);
+    void fromBirthdayChanged(const QDate &newDate);
+    void toBirthdayChanged(const QDate &newDate);
+    void sexTypeChanged(const Person::Sex newSex);
+    void caseSensitivityChanged(bool sensitive);
+    void useRegExp(bool use);
 
 public slots:
 
+protected slots:
+    void handleFilterColumnChange(int idx);
+
 private:
     QLineEdit *filterLineEdit_;
-    QComboBox *filterType_;
     QComboBox *filterColumn_;
     QVector<CONST::HDG> headingList_;
+    QCheckBox *caseSensitivity_;
+    QCheckBox *useRegexp_;
+    QStackedLayout *stackedLayout_;
+    QListWidget *sexSelector_;
+    QDateEdit *fromDate_;
+    QDateEdit *toDate_;
 };
