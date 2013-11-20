@@ -4,6 +4,7 @@
 #include <QTabWidget>
 #include <QTableView>
 #include <QDialog>
+#include <QLocale>
 
 #include "StudentTableModel.h"
 #include "StudentTableDelegate.h"

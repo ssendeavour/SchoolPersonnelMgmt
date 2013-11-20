@@ -2,6 +2,7 @@
 
 #include <QSize>
 #include <functional>
+#include <locale>
 
 StudentTableModel::StudentTableModel(QVector<CONST::HDG> indexMap,  QObject *parent /*= 0*/) :
     QAbstractTableModel(parent), indexMap_(indexMap) {
@@ -159,6 +160,7 @@ void StudentTableModel::sort(int column, Qt::SortOrder order){
     // std::function is about two times slower than lambda expression
 //    std::function<bool(Student, Student)> func;
     emit layoutAboutToBeChanged();
+
     switch(this->indexMap_[column]){
     case CONST::HDG::ID:
         if(Qt::AscendingOrder == order){
@@ -169,10 +171,21 @@ void StudentTableModel::sort(int column, Qt::SortOrder order){
         break;
     case CONST::HDG::NAME:
         if(Qt::AscendingOrder == order){
-            Student s;
-            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getName() < b.getName(); });
+            qStableSort(this->list_.begin(), this->list_.end(), [this](Student a, Student b) -> bool {
+                std::string sa = a.getName().toStdString();
+                std::string sb = b.getName().toStdString();
+                const char *pa = sa.data();
+                const char *pb = sb.data();
+                return this->zh_CN_collate_.compare(pa, pa + sa.size(), pb, pb + sb.size()) < 0;
+            });
         } else {
-            qStableSort(this->list_.begin(), this->list_.end(), [](Student a, Student b) -> bool {return a.getName() >= b.getName(); });
+            qStableSort(this->list_.begin(), this->list_.end(), [this](Student a, Student b) -> bool {
+                std::string sa = a.getName().toStdString();
+                std::string sb = b.getName().toStdString();
+                const char *pa = sa.data();
+                const char *pb = sb.data();
+                return this->zh_CN_collate_.compare(pa, pa + sa.size(), pb, pb + sb.size()) >= 0;
+            });
         }
         break;
     case CONST::HDG::SEX:

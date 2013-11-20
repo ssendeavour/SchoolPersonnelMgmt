@@ -125,6 +125,8 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     connect(this->sexSelector_, &QListWidget::itemActivated, [this](QListWidgetItem *item){
         emit sexTypeChanged(static_cast<Person::Sex>(item->type()));
     });
+    this->sexSelector_->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->sexSelector_->setCurrentRow(0);
     this->stackedLayout_->addWidget(this->sexSelector_);
 
     layout->addLayout(this->stackedLayout_);
@@ -133,8 +135,12 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     QPushButton *okButton = new QPushButton(tr("&Close"));
     okButton->setDefault(true);
     connect(okButton, &QPushButton::clicked, this, &StudentFilterDialog::done);
-    okButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    layout->addWidget(okButton);
+    okButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(okButton);
+    buttonLayout->addStretch();
+    layout->addLayout(buttonLayout);
 
     setLayout(layout);
 }

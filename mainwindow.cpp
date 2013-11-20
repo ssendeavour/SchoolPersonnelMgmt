@@ -118,6 +118,7 @@ void MainWindow::addMenuBarToolBar()
 //    editMenu->addSeparator();
 
     QAction *filterAction = new QAction(tr("&Find && Filter"), this);
+    filterAction->setIconText(tr("Find"));
     filterAction->setShortcut(QKeySequence::Find);
     connect(filterAction, &QAction::triggered, this, &MainWindow::openFilterDialog);
     editMenu->addAction(filterAction);
