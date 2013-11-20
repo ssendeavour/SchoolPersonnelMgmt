@@ -77,7 +77,7 @@ private:
     QList<Student> listOrig_ = list_;
     bool isFiltering_ = false;
     bool filterEnabled_ = false;
-    bool userRegexp_ = false;
+    bool useRegexp_ = false;
     bool caseSensitive_ = false;
     CONST::HDG filterColumn_ = CONST::HDG::ID;
     QRegularExpression filterRegexp_ = QRegularExpression(".*", QRegularExpression::DontCaptureOption);
@@ -95,9 +95,9 @@ inline void StudentTableModel::setEnableFilter(bool enable){
     if(enable){
         this->listOrig_ = this->list_;
     } else {
-        emit layoutAboutToBeChanged();
+        beginResetModel();
         this->list_ = this->listOrig_;
-        emit layoutChanged();
+        endResetModel();
     }
     qDebug() << "filter enabled: " << enable;
 }
@@ -113,10 +113,10 @@ inline void StudentTableModel::setFilterColumn(const CONST::HDG column){
 inline void StudentTableModel::setFilterString(const QString &newString){
     if(this->isFiltering_ == false && newString != this->filterString_){
         this->filterString_ = newString;
-        if(this->userRegexp_) {
+        if(this->useRegexp_) {
             setRegexp(newString);
         }
-        qDebug() << "Filter string: " << newString << ", use regexp: " << this->userRegexp_;
+        qDebug() << "Filter string: " << newString << ", use regexp: " << this->useRegexp_;
         filter();
     }
 }
@@ -133,7 +133,7 @@ inline void StudentTableModel::setFilterCaseSentivity(bool sensitive){
     if(this->isFiltering_ == 0 && sensitive != this->caseSensitive_){
         this->caseSensitive_ = sensitive;
         qDebug() << "filter Case: " << sensitive;
-        if(this->userRegexp_){
+        if(this->useRegexp_){
             setRegexp(this->filterString_);
         }
         filter();
@@ -141,8 +141,8 @@ inline void StudentTableModel::setFilterCaseSentivity(bool sensitive){
 }
 
 inline void StudentTableModel::setFilterUseRegexp(bool yes){
-    if(this->isFiltering_ == 0 && yes != this->userRegexp_){
-        this->userRegexp_ = yes;
+    if(this->isFiltering_ == 0 && yes != this->useRegexp_){
+        this->useRegexp_ = yes;
         qDebug() << "filter use Regexp: " << yes;
         if(yes){
             setRegexp(this->filterString_);

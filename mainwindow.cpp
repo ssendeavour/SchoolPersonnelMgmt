@@ -129,10 +129,6 @@ void MainWindow::addMenuBarToolBar()
     connect(clearDataAction, &QAction::triggered, this, &MainWindow::clearAllData);
     editMenu->addAction(clearDataAction);
 
-    QAction *hideSomeRowAction = new QAction(tr("&Hide some row"), this);
-    connect(hideSomeRowAction, &QAction::triggered, this, &MainWindow::hideRows);
-    editMenu->addAction(hideSomeRowAction);
-
     ui->mainToolBar->addAction(openAction);
     ui->mainToolBar->addAction(saveAction);
     ui->mainToolBar->addSeparator();
@@ -388,11 +384,29 @@ void MainWindow::openFilterDialog(){
     QVector<CONST::HDG> headingIndex;
     MainWindow::TAB tab = static_cast<MainWindow::TAB>(this->tabs_->currentIndex());
     switch(tab){
-    case MainWindow::TAB::STUDENT:
+    case MainWindow::TAB::STUDENT: {
         headingIndex = this->studentTableModel_->getHeaderIndexs();
+        // don't specify a parent, so that this dialog has its own icon in TaskBar area
+        this->filterDialog_ = new StudentFilterDialog(headingIndex);
+        this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
+        connect(this->filterDialog_, &StudentFilterDialog::filterColumnChanged, this->studentTableModel_, &StudentTableModel::setFilterColumn);
+        connect(this->filterDialog_, &StudentFilterDialog::filterTextChanged, this->studentTableModel_, &StudentTableModel::setFilterString);
+        connect(this->filterDialog_, &StudentFilterDialog::useRegExp, this->studentTableModel_, &StudentTableModel::setFilterUseRegexp);
+        connect(this->filterDialog_, &StudentFilterDialog::caseSensitivityChanged, this->studentTableModel_, &StudentTableModel::setFilterCaseSentivity);
+        connect(this->filterDialog_, &StudentFilterDialog::sexTypeChanged, this->studentTableModel_, &StudentTableModel::setFilterSex);
+        connect(this->filterDialog_, &StudentFilterDialog::fromBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMinDate);
+        connect(this->filterDialog_, &StudentFilterDialog::toBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMaxDate);
+        connect(this->filterDialog_, &StudentFilterDialog::finished, [this](){ this->studentTableModel_->setEnableFilter(false); });
         this->studentTableModel_->setEnableFilter(true);
+        this->studentTableModel_->setFilterCaseSentivity(false);
+        this->studentTableModel_->setFilterUseRegexp(false);
+        this->studentTableModel_->setFilterColumn(CONST::HDG::ID);
+        this->studentTableModel_->setFilterMinDate(QDate(1880,1,1));
+        this->studentTableModel_->setFilterMaxDate(QDate::currentDate());
+        this->studentTableModel_->setFilterSex(Person::Sex::Male);
+        this->studentTableModel_->setFilterString("");
         break;
-
+    }
     case MainWindow::TAB::TEACHER:
         break;
 
@@ -403,24 +417,8 @@ void MainWindow::openFilterDialog(){
         break;
     }
 
-    // don't specify a parent, so that this dialog has its own icon in TaskBar area
-    if(this->filterDialog_) {
-        delete this->filterDialog_;
-    }
-    this->filterDialog_ = new StudentFilterDialog(headingIndex);
-    this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
-    connect(this->filterDialog_, &StudentFilterDialog::filterColumnChanged, this->studentTableModel_, &StudentTableModel::setFilterColumn);
-    connect(this->filterDialog_, &StudentFilterDialog::filterTextChanged, this->studentTableModel_, &StudentTableModel::setFilterString);
-    connect(this->filterDialog_, &StudentFilterDialog::useRegExp, this->studentTableModel_, &StudentTableModel::setFilterUseRegexp);
-    connect(this->filterDialog_, &StudentFilterDialog::caseSensitivityChanged, this->studentTableModel_, &StudentTableModel::setFilterCaseSentivity);
-    connect(this->filterDialog_, &StudentFilterDialog::sexTypeChanged, this->studentTableModel_, &StudentTableModel::setFilterSex);
-    connect(this->filterDialog_, &StudentFilterDialog::fromBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMinDate);
-    connect(this->filterDialog_, &StudentFilterDialog::toBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMaxDate);
     switch(tab){
     case MainWindow::TAB::STUDENT:
-        connect(this->filterDialog_, &StudentFilterDialog::finished, [this](){
-            this->studentTableModel_->setEnableFilter(false);
-        });
         break;
 
     case MainWindow::TAB::TEACHER:
@@ -434,10 +432,4 @@ void MainWindow::openFilterDialog(){
     }
     // show as non-model dialog
     this->filterDialog_->show();
-}
-
-void MainWindow::hideRows(){
-    this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(1, true);
-    this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(3, true);
-    this->tableView_[MainWindow::TAB::STUDENT]->setRowHidden(4, true);
 }

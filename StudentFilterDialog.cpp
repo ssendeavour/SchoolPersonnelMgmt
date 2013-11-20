@@ -127,7 +127,12 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     });
     this->sexSelector_->setSelectionMode(QAbstractItemView::SingleSelection);
     this->sexSelector_->setCurrentRow(0);
-    this->stackedLayout_->addWidget(this->sexSelector_);
+    QVBoxLayout *sexLayout = new QVBoxLayout;
+    sexLayout->addWidget(this->sexSelector_);
+    sexLayout->addWidget(new QLabel(tr("<b>Double click to sort</b>")));
+    widget = new QWidget;
+    widget->setLayout(sexLayout);
+    this->stackedLayout_->addWidget(widget);
 
     layout->addLayout(this->stackedLayout_);
 

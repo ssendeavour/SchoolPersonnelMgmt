@@ -228,7 +228,7 @@ void StudentTableModel::filter(){
     QList<Student> newList;
     switch (this->filterColumn_) {
     case CONST::HDG::ID: {
-        if (this->userRegexp_) {
+        if (this->useRegexp_) {
             for (Student &stu : this->listOrig_){
                 if(stu.getId().contains(this->filterRegexp_)){
                     newList.append(stu);
@@ -245,7 +245,7 @@ void StudentTableModel::filter(){
     }
         break;
     case CONST::HDG::NAME: {
-        if (this->userRegexp_) {
+        if (this->useRegexp_) {
             for (Student &stu : this->listOrig_){
                 if(stu.getName().contains(this->filterRegexp_)){
                     newList.append(stu);
@@ -278,7 +278,7 @@ void StudentTableModel::filter(){
     }
         break;
     case CONST::HDG::CLASSNO: {
-        if (this->userRegexp_) {
+        if (this->useRegexp_) {
             for (Student &stu : this->listOrig_){
                 if(stu.getClassNo().contains(this->filterRegexp_)){
                     newList.append(stu);
@@ -295,7 +295,7 @@ void StudentTableModel::filter(){
     }
         break;
     case CONST::HDG::IDNUMBER: {
-        if (this->userRegexp_) {
+        if (this->useRegexp_) {
             for (Student &stu : this->listOrig_){
                 if(stu.getIdNumber().contains(this->filterRegexp_)){
                     newList.append(stu);
