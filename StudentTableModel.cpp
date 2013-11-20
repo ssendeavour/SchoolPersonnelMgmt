@@ -1,8 +1,6 @@
 #include "StudentTableModel.h"
 
 #include <QSize>
-#include <functional>
-#include <locale>
 
 StudentTableModel::StudentTableModel(QVector<CONST::HDG> indexMap,  QObject *parent /*= 0*/) :
     QAbstractTableModel(parent), indexMap_(indexMap) {
@@ -23,7 +21,7 @@ int StudentTableModel::columnCount(const QModelIndex & parent /*= QModelIndex()*
 
 QVariant StudentTableModel::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
     //* NOTE: if used across days, Today string will be inaccurate.
-    static QString birtyTooltip = "Valid date range: 1880-01-01 to Today(" + QDate::currentDate().toString("yyyy-MM-dd") + ")";
+    static QString birthTooltip = "Valid date range: 1880-01-01 to Today(" + QDate::currentDate().toString("yyyy-MM-dd") + ")";
     if(!index.isValid()){
         return QVariant();
     }
@@ -57,7 +55,7 @@ QVariant StudentTableModel::data(const QModelIndex & index, int role /*= Qt::Dis
     } else if (role == Qt::ToolTipRole) {
         switch(this->indexMap_.at(index.column())){
         case CONST::HDG::BIRTHDAY:
-            return birtyTooltip;
+            return birthTooltip;
         case CONST::HDG::IDNUMBER:
             return "18 digits or 17 digits with letter X";
         default:
@@ -220,4 +218,114 @@ void StudentTableModel::sort(int column, Qt::SortOrder order){
         break;
     }
     emit layoutChanged();
+}
+
+void StudentTableModel::filter(){
+    if(! this->filterEnabled_)
+        return;
+    this->isFiltering_ = true;
+
+    QList<Student> newList;
+    switch (this->filterColumn_) {
+    case CONST::HDG::ID: {
+        if (this->userRegexp_) {
+            for (Student &stu : this->listOrig_){
+                if(stu.getId().contains(this->filterRegexp_)){
+                    newList.append(stu);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(Student &stu : this->listOrig_){
+                if(stu.getId().contains(this->filterString_, sensitivity)) {
+                    newList.append(stu);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::NAME: {
+        if (this->userRegexp_) {
+            for (Student &stu : this->listOrig_){
+                if(stu.getName().contains(this->filterRegexp_)){
+                    newList.append(stu);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(Student &stu : this->listOrig_){
+                if(stu.getName().contains(this->filterString_, sensitivity)) {
+                    newList.append(stu);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::SEX: {
+        for (Student &stu : this->listOrig_){
+            if(stu.getSex() == this->filterSex_){
+                newList.append(stu);
+            }
+        }
+    }
+        break;
+    case CONST::HDG::BIRTHDAY: {
+        for (Student &stu : this->listOrig_){
+            if(this->minDate_ <= stu.getBirthday() && stu.getBirthday() <= this->maxDate_){
+                newList.append(stu);
+            }
+        }
+    }
+        break;
+    case CONST::HDG::CLASSNO: {
+        if (this->userRegexp_) {
+            for (Student &stu : this->listOrig_){
+                if(stu.getClassNo().contains(this->filterRegexp_)){
+                    newList.append(stu);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(Student &stu : this->listOrig_){
+                if(stu.getClassNo().contains(this->filterString_, sensitivity)) {
+                    newList.append(stu);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::IDNUMBER: {
+        if (this->userRegexp_) {
+            for (Student &stu : this->listOrig_){
+                if(stu.getIdNumber().contains(this->filterRegexp_)){
+                    newList.append(stu);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(Student &stu : this->listOrig_){
+                if(stu.getIdNumber().contains(this->filterString_, sensitivity)) {
+                    newList.append(stu);
+                }
+            }
+        }
+    }
+        break;
+    default:
+        return;
+    }
+
+    emit layoutAboutToBeChanged();
+    this->list_ = newList;
+    emit layoutChanged();
+    this->isFiltering_ = false;
+}
+
+void StudentTableModel::setRegexp(QString pattern){
+    this->filterRegexp_.setPattern(pattern);
+    if(this->caseSensitive_){
+        this->filterRegexp_.setPatternOptions(QRegularExpression::DontCaptureOption);
+    } else {
+        this->filterRegexp_.setPatternOptions(QRegularExpression::DontCaptureOption|QRegularExpression::CaseInsensitiveOption);
+    }
 }

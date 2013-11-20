@@ -390,6 +390,7 @@ void MainWindow::openFilterDialog(){
     switch(tab){
     case MainWindow::TAB::STUDENT:
         headingIndex = this->studentTableModel_->getHeaderIndexs();
+        this->studentTableModel_->setEnableFilter(true);
         break;
 
     case MainWindow::TAB::TEACHER:
@@ -403,10 +404,36 @@ void MainWindow::openFilterDialog(){
     }
 
     // don't specify a parent, so that this dialog has its own icon in TaskBar area
-    StudentFilterDialog *dialog = new StudentFilterDialog(headingIndex);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    if(this->filterDialog_) {
+        delete this->filterDialog_;
+    }
+    this->filterDialog_ = new StudentFilterDialog(headingIndex);
+    this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
+    connect(this->filterDialog_, &StudentFilterDialog::filterColumnChanged, this->studentTableModel_, &StudentTableModel::setFilterColumn);
+    connect(this->filterDialog_, &StudentFilterDialog::filterTextChanged, this->studentTableModel_, &StudentTableModel::setFilterString);
+    connect(this->filterDialog_, &StudentFilterDialog::useRegExp, this->studentTableModel_, &StudentTableModel::setFilterUseRegexp);
+    connect(this->filterDialog_, &StudentFilterDialog::caseSensitivityChanged, this->studentTableModel_, &StudentTableModel::setFilterCaseSentivity);
+    connect(this->filterDialog_, &StudentFilterDialog::sexTypeChanged, this->studentTableModel_, &StudentTableModel::setFilterSex);
+    connect(this->filterDialog_, &StudentFilterDialog::fromBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMinDate);
+    connect(this->filterDialog_, &StudentFilterDialog::toBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMaxDate);
+    switch(tab){
+    case MainWindow::TAB::STUDENT:
+        connect(this->filterDialog_, &StudentFilterDialog::finished, [this](){
+            this->studentTableModel_->setEnableFilter(false);
+        });
+        break;
+
+    case MainWindow::TAB::TEACHER:
+        break;
+
+    case MainWindow::TAB::POSTGRAD:
+        break;
+
+    case MainWindow::TAB::TA:
+        break;
+    }
     // show as non-model dialog
-    dialog->show();
+    this->filterDialog_->show();
 }
 
 void MainWindow::hideRows(){

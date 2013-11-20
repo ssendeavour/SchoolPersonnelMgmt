@@ -29,7 +29,7 @@ signals:
     void toBirthdayChanged(const QDate &newDate);
     void sexTypeChanged(const Person::Sex newSex);
     void caseSensitivityChanged(bool sensitive);
-    void useRegExp(bool use);
+    void useRegExp(bool yes);
 
 public slots:
 

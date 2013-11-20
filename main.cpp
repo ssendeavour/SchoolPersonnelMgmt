@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QLocale::setDefault(QLocale::Chinese);
+//    QLocale::setDefault(QLocale::Chinese);
 
     MainWindow w;
     w.resize(800,500);
