@@ -16,11 +16,11 @@
 #include "const.h"
 #include "person.h"
 
-class StudentFilterDialog : public QDialog
+class CommonFilterDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *parent = 0);
+    explicit CommonFilterDialog(QVector<CONST::HDG> headings, QWidget *parent = 0);
 
 signals:
     void filterColumnChanged(const CONST::HDG &column);

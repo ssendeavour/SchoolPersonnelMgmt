@@ -7,8 +7,8 @@
 #include <QLocale>
 
 #include "StudentTableModel.h"
-#include "StudentTableDelegate.h"
-#include "StudentFilterDialog.h"
+#include "CommonTableDelegate.h"
+#include "CommonFilterDialog.h"
 
 
 namespace Ui {
@@ -63,6 +63,6 @@ private:
 //    QDialog *filterDialog;
 
     StudentTableModel *studentTableModel_;
-    StudentFilterDialog *filterDialog_ = nullptr;
+    CommonFilterDialog *filterDialog_ = nullptr;
 };
 

@@ -1,4 +1,4 @@
-#include "StudentFilterDialog.h"
+#include "CommonFilterDialog.h"
 
 #include <QRegExp>
 
@@ -10,7 +10,7 @@
 #include <QGroupBox>
 #include <QStackedLayout>
 
-StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *parent) :
+CommonFilterDialog::CommonFilterDialog(QVector<CONST::HDG> headings, QWidget *parent) :
     QDialog(parent), headingList_(headings)
 {
     setWindowTitle(tr("Student Table Filter"));
@@ -25,7 +25,7 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
         this->filterColumn_->addItem(CONST::getHeadingString(column), static_cast<int>(column));
     }
     connect(this->filterColumn_, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
-            this, &StudentFilterDialog::handleFilterColumnChange);
+            this, &CommonFilterDialog::handleFilterColumnChange);
     this->filterColumn_->setCurrentIndex(0);
 
     QFormLayout *headerLayout = new QFormLayout;
@@ -42,7 +42,7 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     // Frame 0: string filter
     QVBoxLayout *stringLayout = new QVBoxLayout;
     this->filterLineEdit_ = new QLineEdit(this);
-    connect(this->filterLineEdit_, &QLineEdit::textChanged, this, &StudentFilterDialog::filterTextChanged);
+    connect(this->filterLineEdit_, &QLineEdit::textChanged, this, &CommonFilterDialog::filterTextChanged);
     this->filterLineEdit_->setPlaceholderText(tr("what are you looking for ?"));
     stringLayout->addWidget(this->filterLineEdit_);
 
@@ -51,11 +51,11 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     QVBoxLayout *filterTextOptionLayout = new QVBoxLayout;
 
     this->caseSensitivity_ = new QCheckBox(tr("Case &sensitive"));
-    connect(this->caseSensitivity_, &QCheckBox::toggled, this, &StudentFilterDialog::caseSensitivityChanged);
+    connect(this->caseSensitivity_, &QCheckBox::toggled, this, &CommonFilterDialog::caseSensitivityChanged);
     this->caseSensitivity_->setChecked(false);
 
     this->useRegexp_ = new QCheckBox(tr("&Regexp(PCRE)"));
-    connect(this->useRegexp_, &QCheckBox::toggled, this, &StudentFilterDialog::useRegExp);
+    connect(this->useRegexp_, &QCheckBox::toggled, this, &CommonFilterDialog::useRegExp);
     this->useRegexp_->setChecked(false);
 
     filterTextOptionLayout->addWidget(this->caseSensitivity_);
@@ -72,13 +72,13 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     this->fromDate_ = new QDateEdit();
     this->fromDate_->setDisplayFormat("yyyy-MM-dd");
     this->fromDate_->setCalendarPopup(true);
-    connect(this->fromDate_, &QDateEdit::dateChanged, this, &StudentFilterDialog::fromBirthdayChanged);
+    connect(this->fromDate_, &QDateEdit::dateChanged, this, &CommonFilterDialog::fromBirthdayChanged);
     dateRangeLayout->addRow(tr("&From: "), this->fromDate_);
 
     this->toDate_ = new QDateEdit();
     this->toDate_->setDisplayFormat("yyyy-MM-dd");
     this->toDate_->setCalendarPopup(true);
-    connect(this->toDate_, &QDateEdit::dateChanged, this, &StudentFilterDialog::toBirthdayChanged);
+    connect(this->toDate_, &QDateEdit::dateChanged, this, &CommonFilterDialog::toBirthdayChanged);
     dateRangeLayout->addRow(tr("&To: "), this->toDate_);
 
     // emit initial dateChanged signal
@@ -139,7 +139,7 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
     // button
     QPushButton *okButton = new QPushButton(tr("&Close"));
     okButton->setDefault(true);
-    connect(okButton, &QPushButton::clicked, this, &StudentFilterDialog::done);
+    connect(okButton, &QPushButton::clicked, this, &CommonFilterDialog::done);
     okButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch();
@@ -151,7 +151,7 @@ StudentFilterDialog::StudentFilterDialog(QVector<CONST::HDG> headings, QWidget *
 }
 
 
-void StudentFilterDialog::handleFilterColumnChange(int idx){
+void CommonFilterDialog::handleFilterColumnChange(int idx){
     CONST::HDG index = static_cast<CONST::HDG>(this->filterColumn_->itemData(idx).toInt());
     emit filterColumnChanged(index);
 

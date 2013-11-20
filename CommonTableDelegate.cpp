@@ -1,4 +1,4 @@
-#include "StudentTableDelegate.h"
+#include "CommonTableDelegate.h"
 
 #include <QApplication>
 #include <QDateEdit>
@@ -11,12 +11,12 @@
 
 #include "StudentTableModel.h"
 
-StudentTableDelegate::StudentTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent /*= 0*/) :
+CommonTableDelegate::CommonTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent /*= 0*/) :
     QStyledItemDelegate(parent), indexMap_(indexMap)
 {
 }
 
-QWidget *StudentTableDelegate::createEditor(
+QWidget *CommonTableDelegate::createEditor(
         QWidget *parent,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
@@ -89,7 +89,7 @@ QWidget *StudentTableDelegate::createEditor(
     }
 }
 
-void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
+void CommonTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const{
     switch(this->indexMap_.at(index.column())){
     case CONST::HDG::SEX : {
         QComboBox *sexEditor = qobject_cast<QComboBox*>(editor);
@@ -113,7 +113,7 @@ void StudentTableDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
     }
 }
 
-void StudentTableDelegate::setModelData( QWidget *editor, QAbstractItemModel *model,
+void CommonTableDelegate::setModelData( QWidget *editor, QAbstractItemModel *model,
                                          const QModelIndex &index) const
 {
     switch(this->indexMap_.at(index.column())){
@@ -132,7 +132,7 @@ void StudentTableDelegate::setModelData( QWidget *editor, QAbstractItemModel *mo
     }
 }
 
-void StudentTableDelegate::updateEditorGeometry(
+void CommonTableDelegate::updateEditorGeometry(
         QWidget *editor,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const

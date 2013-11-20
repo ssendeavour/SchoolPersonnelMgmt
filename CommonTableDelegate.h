@@ -5,11 +5,11 @@
 
 #include "const.h"
 
-class StudentTableDelegate : public QStyledItemDelegate
+class CommonTableDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit StudentTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent = 0);
+    explicit CommonTableDelegate(QVector<CONST::HDG> indexMap, QObject *parent = 0);
 
 signals:
 

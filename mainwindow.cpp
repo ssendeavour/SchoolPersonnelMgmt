@@ -18,7 +18,7 @@
 #include <QItemSelectionModel>
 
 #include "teachingassistant.h"
-#include "StudentFilterDialog.h"
+#include "CommonFilterDialog.h"
 
 #include "const.h"
 
@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-//    delete this->filterDialog;
     delete ui;
 }
 
@@ -70,7 +69,7 @@ void MainWindow::initStudentTab()
     headerIndexMap[4] = CONST::HDG::IDNUMBER;
     this->studentTableModel_ = new StudentTableModel(headerIndexMap, this);
     this->tableView_[index]->setModel(this->studentTableModel_);
-    this->tableView_[index]->setItemDelegate(new StudentTableDelegate(headerIndexMap, this->tableView_[index]));
+    this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
 }
 
@@ -387,16 +386,16 @@ void MainWindow::openFilterDialog(){
     case MainWindow::TAB::STUDENT: {
         headingIndex = this->studentTableModel_->getHeaderIndexs();
         // don't specify a parent, so that this dialog has its own icon in TaskBar area
-        this->filterDialog_ = new StudentFilterDialog(headingIndex);
+        this->filterDialog_ = new CommonFilterDialog(headingIndex);
         this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
-        connect(this->filterDialog_, &StudentFilterDialog::filterColumnChanged, this->studentTableModel_, &StudentTableModel::setFilterColumn);
-        connect(this->filterDialog_, &StudentFilterDialog::filterTextChanged, this->studentTableModel_, &StudentTableModel::setFilterString);
-        connect(this->filterDialog_, &StudentFilterDialog::useRegExp, this->studentTableModel_, &StudentTableModel::setFilterUseRegexp);
-        connect(this->filterDialog_, &StudentFilterDialog::caseSensitivityChanged, this->studentTableModel_, &StudentTableModel::setFilterCaseSentivity);
-        connect(this->filterDialog_, &StudentFilterDialog::sexTypeChanged, this->studentTableModel_, &StudentTableModel::setFilterSex);
-        connect(this->filterDialog_, &StudentFilterDialog::fromBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMinDate);
-        connect(this->filterDialog_, &StudentFilterDialog::toBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMaxDate);
-        connect(this->filterDialog_, &StudentFilterDialog::finished, [this](){ this->studentTableModel_->setEnableFilter(false); });
+        connect(this->filterDialog_, &CommonFilterDialog::filterColumnChanged, this->studentTableModel_, &StudentTableModel::setFilterColumn);
+        connect(this->filterDialog_, &CommonFilterDialog::filterTextChanged, this->studentTableModel_, &StudentTableModel::setFilterString);
+        connect(this->filterDialog_, &CommonFilterDialog::useRegExp, this->studentTableModel_, &StudentTableModel::setFilterUseRegexp);
+        connect(this->filterDialog_, &CommonFilterDialog::caseSensitivityChanged, this->studentTableModel_, &StudentTableModel::setFilterCaseSentivity);
+        connect(this->filterDialog_, &CommonFilterDialog::sexTypeChanged, this->studentTableModel_, &StudentTableModel::setFilterSex);
+        connect(this->filterDialog_, &CommonFilterDialog::fromBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMinDate);
+        connect(this->filterDialog_, &CommonFilterDialog::toBirthdayChanged, this->studentTableModel_, &StudentTableModel::setFilterMaxDate);
+        connect(this->filterDialog_, &CommonFilterDialog::finished, [this](){ this->studentTableModel_->setEnableFilter(false); });
         this->studentTableModel_->setEnableFilter(true);
         this->studentTableModel_->setFilterCaseSentivity(false);
         this->studentTableModel_->setFilterUseRegexp(false);
