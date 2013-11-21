@@ -41,3 +41,57 @@ QDataStream &TeachingAssistant::readBinary(QDataStream &in){
     return Postgraduate::readBinary(in) >> this->dept_ >> this->position_;
 }
 
+
+QList<TeachingAssistant> TeachingAssistant::readFromFile(QFile &file, QString &error)
+{
+    QList<TeachingAssistant> list;
+
+    QDataStream in(&file);
+    u_int32_t magicNumber;
+    in >> magicNumber;
+    if(magicNumber != CONST::MAGIC_NUMBER){
+        error = tr("Wrong file format, not a School Personnel Management data file");
+        return list;
+    }
+
+    u_int32_t filetype;
+    in >> filetype;
+    if(filetype != CONST::FILE_TYPE_TEACHING_ASSISTANT){
+        error = tr("Wrong file type, not a TeachingAssistant data file (extension: %1)").arg(CONST::FILE_EXTENSION_TA);
+        return list;
+    }
+
+    u_int32_t version;
+    in >> version;
+    if(version != CONST::VERSION_1_20131109){
+        error = tr("unknow TeachingAssistant data file version: %1").arg(version);
+        return list;
+    }
+    in.setVersion(QDataStream::Qt_4_2);
+
+    quint64 size;
+    in >> size;
+    list.reserve(size);
+
+    TeachingAssistant stu;
+    for(quint64 i=0; i < size; ++i){
+        in >> stu;
+        list.append(stu);
+    }
+    return list;
+}
+
+bool TeachingAssistant::writeToFile(QFile &file, const QList<TeachingAssistant> list)
+{
+    QDataStream out(&file);
+
+    out << CONST::MAGIC_NUMBER << CONST::FILE_TYPE_TEACHING_ASSISTANT << CONST::VERSION_1_20131109;
+
+    out.setVersion(QDataStream::Qt_4_2);
+    out << static_cast<quint64>(list.size());
+
+    for(TeachingAssistant item : list){
+        out << item;
+    }
+    return true;
+}

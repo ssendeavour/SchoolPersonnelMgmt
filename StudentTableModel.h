@@ -13,9 +13,7 @@
 #include <string>
 #include <algorithm>
 
-//using namespace std;
-
-#include "teachingassistant.h"
+#include "student.h"
 
 class locale;
 

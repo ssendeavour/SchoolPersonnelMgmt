@@ -22,12 +22,13 @@ public:
     friend QDataStream &operator <<(QDataStream &out, const Postgraduate &pg);
     friend QDataStream &operator >>(QDataStream &in, Postgraduate &pg);
 
+    /* Parameter: file is an opend file, don't close it here.
+     * currently, always return true */
+   static bool writeToFile(QFile &file, const QList<Postgraduate> list);
+
+    /* Parameter: file is an opend file, don't close it here */
+   static QList<Postgraduate> readFromFile(QFile &file, QString &error);
     virtual QString toString() const override;
-
- protected:
-    virtual QDataStream &writeBinary(QDataStream &out) const override;
-    virtual QDataStream &readBinary(QDataStream &in) override;
-
 
 public:
     QString getMajor() const;
@@ -35,6 +36,10 @@ public:
 
     QString getTutorId() const;
     bool setTutorId(QString id_);
+
+ protected:
+    virtual QDataStream &writeBinary(QDataStream &out) const override;
+    virtual QDataStream &readBinary(QDataStream &in) override;
 
 protected:
     QString major_;

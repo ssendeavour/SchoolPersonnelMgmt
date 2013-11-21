@@ -11,8 +11,8 @@
 
 #include "StudentTableModel.h"
 #include "TeacherTableModel.h"
-
-
+#include "PostgraduateTableModel.h"
+#include "TeachingAssistantTableModel.h"
 
 namespace Ui {
 class MainWindow;
@@ -52,12 +52,18 @@ protected:
     bool openTeacherFile(QFile &file, QString &error);
     bool saveTeacherFile(QFile &file, QString &error);
 
+    bool openPostgraduateFile(QFile &file, QString &error);
+    bool savePostgraduateFile(QFile &file, QString &error);
+
+    bool openTeachingAssistantFile(QFile &file, QString &error);
+    bool saveTeachingAssistantFile(QFile &file, QString &error);
+
 private:
     void initUI();
     void initStudentTab();
     void initTeacherTab();
-//    void initPostgraduateTab();
-//    void initTeachingAssistantTab();
+    void initPostgraduateTab();
+    void initTeachingAssistantTab();
 
     void addMenuBarToolBar();
 
@@ -74,6 +80,8 @@ private:
 
     StudentTableModel *studentTableModel_;
     TeacherTableModel *teacherTableModel_;
+    PostgraduateTableModel *postgradTableModel_;
+    TeachingAssistantTableModel *taTableModel_;
 
     // this dialog is not added to MainWindow as it's child, so that a icon will show in taskbar
     CommonFilterDialog *filterDialog_ = nullptr;

@@ -24,6 +24,12 @@ public:
     friend QDataStream &operator >>(QDataStream &in, TeachingAssistant &ta);
 
     virtual QString toString() const override;
+    /* Parameter: file is an opend file, don't close it here.
+     * currently, always return true */
+    static bool writeToFile(QFile &file, const QList<TeachingAssistant> list);
+
+    /* Parameter: file is an opend file, don't close it here */
+   static QList<TeachingAssistant> readFromFile(QFile &file, QString &error);
 
  protected:
     virtual QDataStream &writeBinary(QDataStream &out) const override;

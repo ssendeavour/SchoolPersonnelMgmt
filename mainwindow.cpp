@@ -18,8 +18,6 @@
 #include <QItemSelectionModel>
 
 
-#include "const.h"
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -48,8 +46,8 @@ void MainWindow::initUI()
 
     initStudentTab();
     initTeacherTab();
-//    initPostgraduateTab();
-//    initTeachingAssistantTab();
+    initPostgraduateTab();
+    initTeachingAssistantTab();
 
     this->tabs_->addTab(this->tableView_[MainWindow::TAB::STUDENT], tr("&Student"));
     this->tabs_->addTab(this->tableView_[MainWindow::TAB::TEACHER], tr("&Teacher"));
@@ -89,37 +87,41 @@ void MainWindow::initTeacherTab() {
     this->tableView_[index]->resizeColumnsToContents();
 }
 
-/*
 void MainWindow::initPostgraduateTab(){
-    const int index = static_cast<int>(MainWindow::TAB::STUDENT);
-    QStringList stuTableHeader;
-    QVector<CONST::HDG> headerIndexMap(5);
+    const int index = static_cast<int>(MainWindow::TAB::POSTGRAD);
+    QVector<CONST::HDG> headerIndexMap(8);
     headerIndexMap[0] = CONST::HDG::ID;
     headerIndexMap[1] = CONST::HDG::NAME;
     headerIndexMap[2] = CONST::HDG::SEX;
-    headerIndexMap[3] = CONST::HDG::BIRTHDAY;
-    headerIndexMap[4] = CONST::HDG::IDNUMBER;
-    this->studentTableModel_ = new StudentTableModel(headerIndexMap, this);
-    this->tableView_[index]->setModel(this->studentTableModel_);
+    headerIndexMap[3] = CONST::HDG::CLASSNO;
+    headerIndexMap[4] = CONST::HDG::MAJOR;
+    headerIndexMap[5] = CONST::HDG::TUTORID;
+    headerIndexMap[6] = CONST::HDG::BIRTHDAY;
+    headerIndexMap[7] = CONST::HDG::IDNUMBER;
+    this->postgradTableModel_ = new PostgraduateTableModel(headerIndexMap, this);
+    this->tableView_[index]->setModel(this->postgradTableModel_);
     this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
 }
 
 void MainWindow::initTeachingAssistantTab(){
-    const int index = static_cast<int>(MainWindow::TAB::STUDENT);
-    QStringList stuTableHeader;
-    QVector<CONST::HDG> headerIndexMap(5);
+    const int index = static_cast<int>(MainWindow::TAB::TA);
+    QVector<CONST::HDG> headerIndexMap(10);
     headerIndexMap[0] = CONST::HDG::ID;
     headerIndexMap[1] = CONST::HDG::NAME;
     headerIndexMap[2] = CONST::HDG::SEX;
-    headerIndexMap[3] = CONST::HDG::BIRTHDAY;
-    headerIndexMap[4] = CONST::HDG::IDNUMBER;
-    this->studentTableModel_ = new StudentTableModel(headerIndexMap, this);
-    this->tableView_[index]->setModel(this->studentTableModel_);
+    headerIndexMap[3] = CONST::HDG::CLASSNO;
+    headerIndexMap[4] = CONST::HDG::MAJOR;
+    headerIndexMap[5] = CONST::HDG::TUTORID;
+    headerIndexMap[6] = CONST::HDG::DEPT;
+    headerIndexMap[7] = CONST::HDG::POSITION;
+    headerIndexMap[8] = CONST::HDG::BIRTHDAY;
+    headerIndexMap[9] = CONST::HDG::IDNUMBER;
+    this->taTableModel_ = new TeachingAssistantTableModel(headerIndexMap, this);
+    this->tableView_[index]->setModel(this->taTableModel_);
     this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
 }
-*/
 
 void MainWindow::addMenuBarToolBar()
 {
@@ -238,11 +240,11 @@ bool MainWindow::openFile()
         break;
     }
     case MainWindow::TAB::POSTGRAD: {
-
+        succeed = openPostgraduateFile(file, error);
         break;
     }
     case MainWindow::TAB::TA: {
-
+        succeed = openTeachingAssistantFile(file, error);
         break;
     }
     }
@@ -317,11 +319,11 @@ bool MainWindow::saveFile()
         break;
     }
     case MainWindow::TAB::POSTGRAD: {
-
+        succeed = savePostgraduateFile(file, error);
         break;
     }
     case MainWindow::TAB::TA: {
-
+        succeed = saveTeachingAssistantFile(file, error);
         break;
     }
     }
@@ -369,6 +371,44 @@ bool MainWindow::saveTeacherFile(QFile &file, QString &error){
     return true;
 }
 
+// file is an opened valid file, don't close it here, the caller should close it
+bool MainWindow::openPostgraduateFile(QFile &file, QString &error){
+    QList<Postgraduate> list = Postgraduate::readFromFile(file, error);
+    if(error.length() > 0){
+        error = tr("Error occurred while open following file:\n\n%1\n\nreason:\n   %2").arg(file.fileName()).arg(error);
+        return false;
+    }
+    this->postgradTableModel_->setDataList(list);
+    return true;
+}
+
+bool MainWindow::savePostgraduateFile(QFile &file, QString &error){
+    if(!Postgraduate::writeToFile(file, this->postgradTableModel_->getDataList())){
+        error = tr("Error occurred while saving to the file:\n\n%1\n\nReason:\n  Unknown").arg(file.fileName());
+        return false;
+    }
+    return true;
+}
+
+// file is an opened valid file, don't close it here, the caller should close it
+bool MainWindow::openTeachingAssistantFile(QFile &file, QString &error){
+    QList<TeachingAssistant> list = TeachingAssistant::readFromFile(file, error);
+    if(error.length() > 0){
+        error = tr("Error occurred while open following file:\n\n%1\n\nreason:\n   %2").arg(file.fileName()).arg(error);
+        return false;
+    }
+    this->taTableModel_->setDataList(list);
+    return true;
+}
+
+bool MainWindow::saveTeachingAssistantFile(QFile &file, QString &error){
+    if(!TeachingAssistant::writeToFile(file, this->taTableModel_->getDataList())){
+        error = tr("Error occurred while saving to the file:\n\n%1\n\nReason:\n  Unknown").arg(file.fileName());
+        return false;
+    }
+    return true;
+}
+
 void MainWindow::clearAllData()
 {
     MainWindow::TAB tab = static_cast<MainWindow::TAB>(this->tabs_->currentIndex());
@@ -380,8 +420,10 @@ void MainWindow::clearAllData()
         this->teacherTableModel_->setDataList(QList<Teacher>());
         break;
     case MainWindow::TAB::POSTGRAD:
+        this->postgradTableModel_->setDataList(QList<Postgraduate>());
         break;
     case MainWindow::TAB::TA:
+        this->taTableModel_->setDataList(QList<TeachingAssistant>());
         break;
     }
 }
@@ -396,11 +438,11 @@ void MainWindow::addNewRow()
     case MainWindow::TAB::TEACHER:
         this->teacherTableModel_->insertRows(this->teacherTableModel_->rowCount(), 1);
         break;
-
     case MainWindow::TAB::POSTGRAD:
+        this->postgradTableModel_->insertRows(this->postgradTableModel_->rowCount(), 1);
         break;
-
     case MainWindow::TAB::TA:
+        this->taTableModel_->insertRows(this->taTableModel_->rowCount(), 1);
         break;
     }
     this->tableView_[tabIndex]->resizeColumnsToContents();
@@ -421,11 +463,11 @@ void MainWindow::insertRowBefore()
         case MainWindow::TAB::TEACHER:
             rowCount = this->teacherTableModel_->rowCount();
             break;
-
         case MainWindow::TAB::POSTGRAD:
+            rowCount = this->postgradTableModel_->rowCount();
             break;
-
         case MainWindow::TAB::TA:
+            rowCount = this->taTableModel_->rowCount();
             break;
         }
 
@@ -448,11 +490,11 @@ void MainWindow::insertRowBefore()
     case MainWindow::TAB::TEACHER:
         this->teacherTableModel_->insertRows(selectionModel->selectedRows().at(0).row(), 1);
         break;
-
     case MainWindow::TAB::POSTGRAD:
+        this->postgradTableModel_->insertRows(selectionModel->selectedRows().at(0).row(), 1);
         break;
-
     case MainWindow::TAB::TA:
+        this->taTableModel_->insertRows(selectionModel->selectedRows().at(0).row(), 1);
         break;
     }
     this->tableView_[tabIndex]->resizeColumnsToContents();
@@ -498,9 +540,14 @@ void MainWindow::deleteRows(){
         break;
     }
     case MainWindow::TAB::POSTGRAD:
+        for(QPair<int, int> pair : pairs) {
+            this->postgradTableModel_->removeRows(pair.first, pair.second);
+        }
         break;
-
     case MainWindow::TAB::TA:
+        for(QPair<int, int> pair : pairs) {
+            this->taTableModel_->removeRows(pair.first, pair.second);
+        }
         break;
     }
 }
@@ -555,11 +602,52 @@ void MainWindow::openFilterDialog(){
         this->teacherTableModel_->setFilterString("");
         break;
 
-    case MainWindow::TAB::POSTGRAD:
+    case MainWindow::TAB::POSTGRAD: {
+        headingIndex = this->postgradTableModel_->getHeaderIndexs();
+        // don't specify a parent, so that this dialog has its own icon in TaskBar area
+        this->filterDialog_ = new CommonFilterDialog(headingIndex);
+        this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
+        connect(this->filterDialog_, &CommonFilterDialog::filterColumnChanged, this->postgradTableModel_, &PostgraduateTableModel::setFilterColumn);
+        connect(this->filterDialog_, &CommonFilterDialog::filterTextChanged, this->postgradTableModel_, &PostgraduateTableModel::setFilterString);
+        connect(this->filterDialog_, &CommonFilterDialog::useRegExp, this->postgradTableModel_, &PostgraduateTableModel::setFilterUseRegexp);
+        connect(this->filterDialog_, &CommonFilterDialog::caseSensitivityChanged, this->postgradTableModel_, &PostgraduateTableModel::setFilterCaseSentivity);
+        connect(this->filterDialog_, &CommonFilterDialog::sexTypeChanged, this->postgradTableModel_, &PostgraduateTableModel::setFilterSex);
+        connect(this->filterDialog_, &CommonFilterDialog::fromBirthdayChanged, this->postgradTableModel_, &PostgraduateTableModel::setFilterMinDate);
+        connect(this->filterDialog_, &CommonFilterDialog::toBirthdayChanged, this->postgradTableModel_, &PostgraduateTableModel::setFilterMaxDate);
+        connect(this->filterDialog_, &CommonFilterDialog::finished, [this](){ this->postgradTableModel_->setEnableFilter(false); });
+        this->postgradTableModel_->setEnableFilter(true);
+        this->postgradTableModel_->setFilterCaseSentivity(false);
+        this->postgradTableModel_->setFilterUseRegexp(false);
+        this->postgradTableModel_->setFilterColumn(CONST::HDG::ID);
+        this->postgradTableModel_->setFilterMinDate(QDate(1880,1,1));
+        this->postgradTableModel_->setFilterMaxDate(QDate::currentDate());
+        this->postgradTableModel_->setFilterSex(Person::Sex::Male);
+        this->postgradTableModel_->setFilterString("");
         break;
-
-    case MainWindow::TAB::TA:
+    }
+    case MainWindow::TAB::TA: {
+        headingIndex = this->taTableModel_->getHeaderIndexs();
+        // don't specify a parent, so that this dialog has its own icon in TaskBar area
+        this->filterDialog_ = new CommonFilterDialog(headingIndex);
+        this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
+        connect(this->filterDialog_, &CommonFilterDialog::filterColumnChanged, this->taTableModel_, &TeachingAssistantTableModel::setFilterColumn);
+        connect(this->filterDialog_, &CommonFilterDialog::filterTextChanged, this->taTableModel_, &TeachingAssistantTableModel::setFilterString);
+        connect(this->filterDialog_, &CommonFilterDialog::useRegExp, this->taTableModel_, &TeachingAssistantTableModel::setFilterUseRegexp);
+        connect(this->filterDialog_, &CommonFilterDialog::caseSensitivityChanged, this->taTableModel_, &TeachingAssistantTableModel::setFilterCaseSentivity);
+        connect(this->filterDialog_, &CommonFilterDialog::sexTypeChanged, this->taTableModel_, &TeachingAssistantTableModel::setFilterSex);
+        connect(this->filterDialog_, &CommonFilterDialog::fromBirthdayChanged, this->taTableModel_, &TeachingAssistantTableModel::setFilterMinDate);
+        connect(this->filterDialog_, &CommonFilterDialog::toBirthdayChanged, this->taTableModel_, &TeachingAssistantTableModel::setFilterMaxDate);
+        connect(this->filterDialog_, &CommonFilterDialog::finished, [this](){ this->taTableModel_->setEnableFilter(false); });
+        this->taTableModel_->setEnableFilter(true);
+        this->taTableModel_->setFilterCaseSentivity(false);
+        this->taTableModel_->setFilterUseRegexp(false);
+        this->taTableModel_->setFilterColumn(CONST::HDG::ID);
+        this->taTableModel_->setFilterMinDate(QDate(1880,1,1));
+        this->taTableModel_->setFilterMaxDate(QDate::currentDate());
+        this->taTableModel_->setFilterSex(Person::Sex::Male);
+        this->taTableModel_->setFilterString("");
         break;
+    }
     }
     // show as non-model dialog
     this->editTrigger_ = this->tableView_[this->tabs_->currentIndex()]->editTriggers();
