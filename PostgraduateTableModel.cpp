@@ -4,30 +4,6 @@
 
 PostgraduateTableModel::PostgraduateTableModel(QVector<CONST::HDG> indexMap,  QObject *parent /*= 0*/) :
     QAbstractTableModel(parent), indexMap_(indexMap) {
-
-    // for test
-    Postgraduate t("Class one", "someone", "007", "12345678901234567X", Person::Sex::Male, QDate::currentDate(), "Mathe", "somebody.");
-    this->list_.append(t);
-    t.setName("Someone");
-    this->list_.append(t);
-    t.setName("somebody");
-    this->list_.append(t);
-    t.setId("123");
-    this->list_.append(t);
-    t.setSex(Person::Sex::Female);
-    this->list_.append(t);
-    t.setBirthday(QDate(2001, 1, 21));
-    this->list_.append(t);
-    t.setName("jeff");
-    this->list_.append(t);
-    this->list_.append(t);
-    t.setBirthday(QDate(1992, 12, 1));
-    this->list_.append(t);
-    t.setName("Groff");
-    this->list_.append(t);
-    this->list_ += this->list_;
-    this->list_ += this->list_;
-    this->list_ += this->list_;
 }
 
 PostgraduateTableModel::~PostgraduateTableModel(){

@@ -414,6 +414,32 @@ void MainWindow::clearAllData()
     MainWindow::TAB tab = static_cast<MainWindow::TAB>(this->tabs_->currentIndex());
     switch(tab){
     case MainWindow::TAB::STUDENT:
+        if(this->studentTableModel_->rowCount() <=0){
+            return;
+        }
+    case MainWindow::TAB::TEACHER:
+        if(this->teacherTableModel_->rowCount() <=0){
+            return;
+        }
+    case MainWindow::TAB::POSTGRAD:
+        if(this->postgradTableModel_->rowCount() <=0){
+            return;
+        }
+    case MainWindow::TAB::TA:
+        if(this->taTableModel_->rowCount() <=0){
+            return;
+        }
+    }
+    if(QMessageBox::Yes !=
+            QMessageBox::question(this,
+                                  tr("Confirm deletion"),
+                                  tr("Are you sure to clear <b>all data</b> in this Table, this <b>can't be undo</b>"),
+                                  QMessageBox::Yes|QMessageBox::No,
+                                  QMessageBox::No)){
+        return;
+    }
+    switch(tab){
+    case MainWindow::TAB::STUDENT:
         this->studentTableModel_->setDataList(QList<Student>());
         break;
     case MainWindow::TAB::TEACHER:
