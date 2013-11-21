@@ -47,14 +47,21 @@ QList<Student> Student::readFromFile(QFile &file, QString &error)
     u_int32_t magicNumber;
     in >> magicNumber;
     if(magicNumber != CONST::MAGIC_NUMBER){
-        error = tr("Wrong file format, not a student data file (.%1).").arg(CONST::FILE_EXTENSION_STUDENT.toUpper());
+        error = tr("Wrong file format, not a School Personnel Management data file");
+        return list;
+    }
+
+    u_int32_t filetype;
+    in >> filetype;
+    if(filetype != CONST::FILE_TYPE_STUDENT){
+        error = tr("Wrong file type, not a Student data file (extension: %1)").arg(CONST::FILE_EXTENSION_STUDENT);
         return list;
     }
 
     u_int32_t version;
     in >> version;
     if(version != CONST::VERSION_1_20131109){
-        error = tr("unknow students data file version: %1").arg(version);
+        error = tr("unknow Student data file version: %1").arg(version);
         return list;
     }
 
@@ -76,7 +83,7 @@ bool Student::writeToFile(QFile &file, const QList<Student> list)
 {
     QDataStream out(&file);
 
-    out << CONST::MAGIC_NUMBER << CONST::VERSION_1_20131109;
+    out << CONST::MAGIC_NUMBER << CONST::FILE_TYPE_STUDENT << CONST::VERSION_1_20131109;
 
     out.setVersion(QDataStream::Qt_4_2);
     out << static_cast<quint64>(list.size());

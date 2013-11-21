@@ -46,3 +46,57 @@ QString Teacher::toString() const
 {
     return tr("%1, Department: %2, Position: %3").arg(Person::toString()).arg(dept_).arg(position_);
 }
+
+QList<Teacher> Teacher::readFromFile(QFile &file, QString &error)
+{
+    QList<Teacher> list;
+
+    QDataStream in(&file);
+    u_int32_t magicNumber;
+    in >> magicNumber;
+    if(magicNumber != CONST::MAGIC_NUMBER){
+        error = tr("Wrong file format, not a School Personnel Management data file");
+        return list;
+    }
+
+    u_int32_t filetype;
+    in >> filetype;
+    if(filetype != CONST::FILE_TYPE_TEACHER){
+        error = tr("Wrong file type, not a Teacher data file (extension: %1)").arg(CONST::FILE_EXTENSION_TEACHER);
+        return list;
+    }
+
+    u_int32_t version;
+    in >> version;
+    if(version != CONST::VERSION_1_20131109){
+        error = tr("unknow Teacher data file version: %1").arg(version);
+        return list;
+    }
+    in.setVersion(QDataStream::Qt_4_2);
+
+    quint64 size;
+    in >> size;
+    list.reserve(size);
+
+    Teacher stu;
+    for(quint64 i=0; i < size; ++i){
+        in >> stu;
+        list.append(stu);
+    }
+    return list;
+}
+
+bool Teacher::writeToFile(QFile &file, const QList<Teacher> list)
+{
+    QDataStream out(&file);
+
+    out << CONST::MAGIC_NUMBER << CONST::FILE_TYPE_TEACHER << CONST::VERSION_1_20131109;
+
+    out.setVersion(QDataStream::Qt_4_2);
+    out << static_cast<quint64>(list.size());
+
+    for(Teacher item : list){
+        out << item;
+    }
+    return true;
+}

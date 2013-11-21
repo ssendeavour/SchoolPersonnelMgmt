@@ -57,7 +57,7 @@ QVariant StudentTableModel::data(const QModelIndex & index, int role /*= Qt::Dis
         case CONST::HDG::BIRTHDAY:
             return birthTooltip;
         case CONST::HDG::IDNUMBER:
-            return "18 digits or 17 digits with letter X";
+            return "18 digits or 17 digits and letter X";
         default:
             return QVariant();
         }
@@ -150,15 +150,10 @@ QVector<CONST::HDG> StudentTableModel::getHeaderIndexs() const{
     return this->indexMap_;
 }
 
-bool dateLessThan(const Student &s1, const Student &s2){
-    return s1.getBirthday() >= s2.getBirthday();
-}
-
 void StudentTableModel::sort(int column, Qt::SortOrder order){
     // std::function is about two times slower than lambda expression
 //    std::function<bool(Student, Student)> func;
-    emit layoutAboutToBeChanged();
-
+    beginResetModel();
     switch(this->indexMap_[column]){
     case CONST::HDG::ID:
         if(Qt::AscendingOrder == order){
@@ -217,7 +212,7 @@ void StudentTableModel::sort(int column, Qt::SortOrder order){
     default:
         break;
     }
-    emit layoutChanged();
+    endResetModel();
 }
 
 void StudentTableModel::filter(){
@@ -315,9 +310,9 @@ void StudentTableModel::filter(){
         return;
     }
 
-    emit layoutAboutToBeChanged();
+    beginResetModel();
     this->list_ = newList;
-    emit layoutChanged();
+    endResetModel();
     this->isFiltering_ = false;
 }
 

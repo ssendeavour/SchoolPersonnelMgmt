@@ -17,8 +17,6 @@
 #include <QModelIndexList>
 #include <QItemSelectionModel>
 
-#include "teachingassistant.h"
-#include "CommonFilterDialog.h"
 
 #include "const.h"
 
@@ -49,6 +47,9 @@ void MainWindow::initUI()
     }
 
     initStudentTab();
+    initTeacherTab();
+//    initPostgraduateTab();
+//    initTeachingAssistantTab();
 
     this->tabs_->addTab(this->tableView_[MainWindow::TAB::STUDENT], tr("&Student"));
     this->tabs_->addTab(this->tableView_[MainWindow::TAB::TEACHER], tr("&Teacher"));
@@ -57,8 +58,39 @@ void MainWindow::initUI()
     setCentralWidget(this->tabs_);
 }
 
-void MainWindow::initStudentTab()
-{
+void MainWindow::initStudentTab() {
+    const int index = static_cast<int>(MainWindow::TAB::STUDENT);
+    QVector<CONST::HDG> headerIndexMap(6);
+    headerIndexMap[0] = CONST::HDG::ID;
+    headerIndexMap[1] = CONST::HDG::NAME;
+    headerIndexMap[2] = CONST::HDG::CLASSNO;
+    headerIndexMap[3] = CONST::HDG::SEX;
+    headerIndexMap[4] = CONST::HDG::BIRTHDAY;
+    headerIndexMap[5] = CONST::HDG::IDNUMBER;
+    this->studentTableModel_ = new StudentTableModel(headerIndexMap, this);
+    this->tableView_[index]->setModel(this->studentTableModel_);
+    this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
+    this->tableView_[index]->resizeColumnsToContents();
+}
+
+void MainWindow::initTeacherTab() {
+    const int index = static_cast<int>(MainWindow::TAB::TEACHER);
+    QVector<CONST::HDG> headerIndexMap(7);
+    headerIndexMap[0] = CONST::HDG::ID;
+    headerIndexMap[1] = CONST::HDG::NAME;
+    headerIndexMap[2] = CONST::HDG::SEX;
+    headerIndexMap[3] = CONST::HDG::BIRTHDAY;
+    headerIndexMap[4] = CONST::HDG::DEPT;
+    headerIndexMap[5] = CONST::HDG::POSITION;
+    headerIndexMap[6] = CONST::HDG::IDNUMBER;
+    this->teacherTableModel_ = new TeacherTableModel(headerIndexMap, this);
+    this->tableView_[index]->setModel(this->teacherTableModel_);
+    this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
+    this->tableView_[index]->resizeColumnsToContents();
+}
+
+/*
+void MainWindow::initPostgraduateTab(){
     const int index = static_cast<int>(MainWindow::TAB::STUDENT);
     QStringList stuTableHeader;
     QVector<CONST::HDG> headerIndexMap(5);
@@ -72,6 +104,22 @@ void MainWindow::initStudentTab()
     this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
     this->tableView_[index]->resizeColumnsToContents();
 }
+
+void MainWindow::initTeachingAssistantTab(){
+    const int index = static_cast<int>(MainWindow::TAB::STUDENT);
+    QStringList stuTableHeader;
+    QVector<CONST::HDG> headerIndexMap(5);
+    headerIndexMap[0] = CONST::HDG::ID;
+    headerIndexMap[1] = CONST::HDG::NAME;
+    headerIndexMap[2] = CONST::HDG::SEX;
+    headerIndexMap[3] = CONST::HDG::BIRTHDAY;
+    headerIndexMap[4] = CONST::HDG::IDNUMBER;
+    this->studentTableModel_ = new StudentTableModel(headerIndexMap, this);
+    this->tableView_[index]->setModel(this->studentTableModel_);
+    this->tableView_[index]->setItemDelegate(new CommonTableDelegate(headerIndexMap, this->tableView_[index]));
+    this->tableView_[index]->resizeColumnsToContents();
+}
+*/
 
 void MainWindow::addMenuBarToolBar()
 {
@@ -147,9 +195,27 @@ bool MainWindow::openFile()
 {
     int index = this->tabs_->currentIndex();
     bool succeed = true;
-    QString fileName = QFileDialog::getOpenFileName(
-                this, tr("Open file"), ".",
-                tr("Student Data File(*.%1);;All files(*)").arg(CONST::FILE_EXTENSION_STUDENT));
+    QString fileFormatString;
+    QString ext;
+    switch(static_cast<MainWindow::TAB>(index)){
+    case MainWindow::TAB::STUDENT:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Student").arg(CONST::FILE_EXTENSION_STUDENT);
+        ext = CONST::FILE_EXTENSION_STUDENT;
+        break;
+    case MainWindow::TAB::TEACHER:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Teacher").arg(CONST::FILE_EXTENSION_TEACHER);
+        ext = CONST::FILE_EXTENSION_TEACHER;
+        break;
+    case MainWindow::TAB::POSTGRAD:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Postgraduate").arg(CONST::FILE_EXTENSION_POSTGRADUATE);
+        ext = CONST::FILE_EXTENSION_POSTGRADUATE;
+        break;
+    case MainWindow::TAB::TA:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Teaching Assistant").arg(CONST::FILE_EXTENSION_TA);
+        ext = CONST::FILE_EXTENSION_TA;
+        break;
+    }
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), ".", fileFormatString);
     if(fileName.isEmpty()){
         return false;
     }
@@ -167,8 +233,18 @@ bool MainWindow::openFile()
         succeed = openStudentFile(file, error);
         break;
     }
-    default:
+    case MainWindow::TAB::TEACHER: {
+        succeed = openTeacherFile(file, error);
         break;
+    }
+    case MainWindow::TAB::POSTGRAD: {
+
+        break;
+    }
+    case MainWindow::TAB::TA: {
+
+        break;
+    }
     }
 
     file.close();
@@ -184,15 +260,35 @@ bool MainWindow::saveFile()
 {
     bool succeed = true;
     bool addedExtension = false;
-    QString fileName = QFileDialog::getSaveFileName(
-                this, tr("Save"), ".",
-                tr("Personnel Student Data File(*.%1);;All files(*)").arg(CONST::FILE_EXTENSION_STUDENT));
+    int index = this->tabs_->currentIndex();
+    QString fileFormatString;
+    QString ext;
+    switch(static_cast<MainWindow::TAB>(index)){
+    case MainWindow::TAB::STUDENT:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Student").arg(CONST::FILE_EXTENSION_STUDENT);
+        ext = CONST::FILE_EXTENSION_STUDENT;
+        break;
+    case MainWindow::TAB::TEACHER:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Teacher").arg(CONST::FILE_EXTENSION_TEACHER);
+        ext = CONST::FILE_EXTENSION_TEACHER;
+        break;
+    case MainWindow::TAB::POSTGRAD:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Postgraduate").arg(CONST::FILE_EXTENSION_POSTGRADUATE);
+        ext = CONST::FILE_EXTENSION_POSTGRADUATE;
+        break;
+    case MainWindow::TAB::TA:
+        fileFormatString = tr("Personnel %1 Data File(*.%2);;All files(*)").arg("Teaching Assistant").arg(CONST::FILE_EXTENSION_TA);
+        ext = CONST::FILE_EXTENSION_TA;
+        break;
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save file"), ".", fileFormatString);
     if(fileName.isEmpty()){
         return false;
     }
     // add extension if necessary
-    if(!fileName.endsWith("." + CONST::FILE_EXTENSION_STUDENT)){
-        fileName +=  "." + CONST::FILE_EXTENSION_STUDENT;
+    if(!fileName.endsWith("." + ext)){
+        fileName +=  "." + ext;
     }
 
     QFile file(fileName);
@@ -214,9 +310,20 @@ bool MainWindow::saveFile()
     switch (static_cast<MainWindow::TAB>(this->tabs_->currentIndex())) {
     case MainWindow::TAB::STUDENT: {  // student table
         succeed = saveStudentFile(file, error);
-    }
-    default:
         break;
+    }
+    case MainWindow::TAB::TEACHER: {
+        succeed = saveTeacherFile(file, error);
+        break;
+    }
+    case MainWindow::TAB::POSTGRAD: {
+
+        break;
+    }
+    case MainWindow::TAB::TA: {
+
+        break;
+    }
     }
     file.close();
     if(!succeed){
@@ -243,6 +350,24 @@ bool MainWindow::saveStudentFile(QFile &file, QString &error){
     }
     return true;
 }
+// file is an opened valid file, don't close it here, the caller should close it
+bool MainWindow::openTeacherFile(QFile &file, QString &error){
+    QList<Teacher> list = Teacher::readFromFile(file, error);
+    if(error.length() > 0){
+        error = tr("Error occurred while open following file:\n\n%1\n\nreason:\n   %2").arg(file.fileName()).arg(error);
+        return false;
+    }
+    this->teacherTableModel_->setDataList(list);
+    return true;
+}
+
+bool MainWindow::saveTeacherFile(QFile &file, QString &error){
+    if(!Teacher::writeToFile(file, this->teacherTableModel_->getDataList())){
+        error = tr("Error occurred while saving to the file:\n\n%1\n\nReason:\n  Unknown").arg(file.fileName());
+        return false;
+    }
+    return true;
+}
 
 void MainWindow::clearAllData()
 {
@@ -251,13 +376,11 @@ void MainWindow::clearAllData()
     case MainWindow::TAB::STUDENT:
         this->studentTableModel_->setDataList(QList<Student>());
         break;
-
     case MainWindow::TAB::TEACHER:
+        this->teacherTableModel_->setDataList(QList<Teacher>());
         break;
-
     case MainWindow::TAB::POSTGRAD:
         break;
-
     case MainWindow::TAB::TA:
         break;
     }
@@ -270,8 +393,8 @@ void MainWindow::addNewRow()
     case MainWindow::TAB::STUDENT:
         this->studentTableModel_->insertRows(this->studentTableModel_->rowCount(), 1);
         break;
-
     case MainWindow::TAB::TEACHER:
+        this->teacherTableModel_->insertRows(this->teacherTableModel_->rowCount(), 1);
         break;
 
     case MainWindow::TAB::POSTGRAD:
@@ -294,8 +417,8 @@ void MainWindow::insertRowBefore()
         case MainWindow::TAB::STUDENT:
             rowCount = this->studentTableModel_->rowCount();
             break;
-
         case MainWindow::TAB::TEACHER:
+            rowCount = this->teacherTableModel_->rowCount();
             break;
 
         case MainWindow::TAB::POSTGRAD:
@@ -320,10 +443,9 @@ void MainWindow::insertRowBefore()
     switch(tab){
     case MainWindow::TAB::STUDENT:
         this->studentTableModel_->insertRows(selectionModel->selectedRows().at(0).row(), 1);
-        this->tableView_[tabIndex]->resizeColumnsToContents();
         break;
-
     case MainWindow::TAB::TEACHER:
+        this->teacherTableModel_->insertRows(selectionModel->selectedRows().at(0).row(), 1);
         break;
 
     case MainWindow::TAB::POSTGRAD:
@@ -332,6 +454,7 @@ void MainWindow::insertRowBefore()
     case MainWindow::TAB::TA:
         break;
     }
+    this->tableView_[tabIndex]->resizeColumnsToContents();
 }
 
 void MainWindow::deleteRows(){
@@ -367,10 +490,12 @@ void MainWindow::deleteRows(){
         }
         break;
     }
-
-    case MainWindow::TAB::TEACHER:
+    case MainWindow::TAB::TEACHER: {
+        for(QPair<int, int> pair : pairs) {
+            this->teacherTableModel_->removeRows(pair.first, pair.second);
+        }
         break;
-
+    }
     case MainWindow::TAB::POSTGRAD:
         break;
 
@@ -407,20 +532,26 @@ void MainWindow::openFilterDialog(){
         break;
     }
     case MainWindow::TAB::TEACHER:
-        break;
-
-    case MainWindow::TAB::POSTGRAD:
-        break;
-
-    case MainWindow::TAB::TA:
-        break;
-    }
-
-    switch(tab){
-    case MainWindow::TAB::STUDENT:
-        break;
-
-    case MainWindow::TAB::TEACHER:
+        headingIndex = this->teacherTableModel_->getHeaderIndexs();
+        // don't specify a parent, so that this dialog has its own icon in TaskBar area
+        this->filterDialog_ = new CommonFilterDialog(headingIndex);
+        this->filterDialog_->setAttribute(Qt::WA_DeleteOnClose);
+        connect(this->filterDialog_, &CommonFilterDialog::filterColumnChanged, this->teacherTableModel_, &TeacherTableModel::setFilterColumn);
+        connect(this->filterDialog_, &CommonFilterDialog::filterTextChanged, this->teacherTableModel_, &TeacherTableModel::setFilterString);
+        connect(this->filterDialog_, &CommonFilterDialog::useRegExp, this->teacherTableModel_, &TeacherTableModel::setFilterUseRegexp);
+        connect(this->filterDialog_, &CommonFilterDialog::caseSensitivityChanged, this->teacherTableModel_, &TeacherTableModel::setFilterCaseSentivity);
+        connect(this->filterDialog_, &CommonFilterDialog::sexTypeChanged, this->teacherTableModel_, &TeacherTableModel::setFilterSex);
+        connect(this->filterDialog_, &CommonFilterDialog::fromBirthdayChanged, this->teacherTableModel_, &TeacherTableModel::setFilterMinDate);
+        connect(this->filterDialog_, &CommonFilterDialog::toBirthdayChanged, this->teacherTableModel_, &TeacherTableModel::setFilterMaxDate);
+        connect(this->filterDialog_, &CommonFilterDialog::finished, [this](){ this->teacherTableModel_->setEnableFilter(false); });
+        this->teacherTableModel_->setEnableFilter(true);
+        this->teacherTableModel_->setFilterCaseSentivity(false);
+        this->teacherTableModel_->setFilterUseRegexp(false);
+        this->teacherTableModel_->setFilterColumn(CONST::HDG::ID);
+        this->teacherTableModel_->setFilterMinDate(QDate(1880,1,1));
+        this->teacherTableModel_->setFilterMaxDate(QDate::currentDate());
+        this->teacherTableModel_->setFilterSex(Person::Sex::Male);
+        this->teacherTableModel_->setFilterString("");
         break;
 
     case MainWindow::TAB::POSTGRAD:
@@ -430,5 +561,10 @@ void MainWindow::openFilterDialog(){
         break;
     }
     // show as non-model dialog
+    this->editTrigger_ = this->tableView_[this->tabs_->currentIndex()]->editTriggers();
+    this->tableView_[this->tabs_->currentIndex()]->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    connect(this->filterDialog_, &CommonFilterDialog::finished, [this](){
+        this->tableView_[this->tabs_->currentIndex()]->setEditTriggers(this->editTrigger_);
+    });
     this->filterDialog_->show();
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include "person.h"
 
+#include <QFile>
+
 class Teacher : virtual public Person
 {
 public:
@@ -18,6 +20,14 @@ public:
 
     friend QDataStream &operator <<(QDataStream &out, const Teacher &teacher);
     friend QDataStream &operator >>(QDataStream &in, Teacher &teacher);
+
+public:
+    /* Parameter: file is an opend file, don't close it here.
+     * currently, always return true */
+   static bool writeToFile(QFile &file, const QList<Teacher> list);
+
+    /* Parameter: file is an opend file, don't close it here */
+   static QList<Teacher> readFromFile(QFile &file, QString &error);
 
     virtual QString toString() const override;
 
