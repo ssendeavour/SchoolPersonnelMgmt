@@ -404,6 +404,7 @@ void MainWindow::addNewRow()
         break;
     }
     this->tableView_[tabIndex]->resizeColumnsToContents();
+    this->tableView_[tabIndex]->scrollToBottom();
 }
 
 void MainWindow::insertRowBefore()
