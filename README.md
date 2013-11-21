@@ -18,16 +18,16 @@ Person							  -> TeachingAssistant(TA)
 
 2. 视图
 
-由于`Q_OBJECTS`不支持多继承和类模板，所以只好分别为Student`, `Postgraduate`, `Teacher`，`TeachingAssistant`定义TableModel
+由于`Q_OBJECTS`不支持多继承和类模板，所以只好分别为`Student`, `Postgraduate`, `Teacher`，`TeachingAssistant`定义TableModel
 以Student Tab为例，包括：
 
  - `StudentTableModel`：提供数据，内部使用`QList<Student>`保存数据
  - `CommonTableDelegate`：双击单元格时`Sex`列的`QComboBox`和`Birthday`列的日期选择Widget由这个类提供。这个类可以处理所有的列，四个表格都使用这个类的实例。
  - `QTableView`：用于显示TableModel 中的内容。四个表格使用的都是这个类。
 
- 程序中定义了一个`enum`类型(`CONST::HDG`)，将所有的列都定义为enum变量。在TableModel, TableDelegate, 过滤对话框中保存的都是这个类型的变量。这样做不需要写四个TableDelegate, 四个过滤对话框了。还定义了一个静态方法 `CONST::getHeadingString()`，获得对应的列名，方便编程和国际化。类似的技巧也在`Person::Sex`中使用了，它定义了一个 `Person::getSexString()`静态方法来获取`Sex`enum类型变量对应的名称。
+程序中定义了一个`enum`类型(`CONST::HDG`)，包含所有的列。在TableModel, TableDelegate, 过滤对话框中保存的都是这个类型的变量。这样做就不需要写四个TableDelegate, 四个过滤对话框了。还定义了一个静态方法 `CONST::getHeadingString()`，获得对应的列名，方便编程和国际化。类似的技巧也在`Person::Sex`中使用了，它定义了一个 `Person::getSexString()`静态方法来获取`Sex`enum类型变量对应的名称。
 
- 3. 过滤对话框
+3. 过滤对话框
 
 值得提一下的是选择一个日期范围对出生日期进行过滤。程序使用两个`QLineEdit`，选择的日期从A到B, 则QLineEdit A中在B的当前显示的日期之后的日期都应当变成灰色，处于不可选状态；QLineEdit B中在A的当前显示的日期之前的日期也应变成灰色，以免用户选到这些日期。维持A的最大可选日期和B的最小可选日期可以通过A与B互相接收对方的日期变化的信号来实现。下面程序中的 if 判断防止A,B不断互发信号陷入死循环。
 
@@ -48,7 +48,7 @@ connect(this->toDate_, &QDateEdit::dateChanged, [this](const QDate &date){
 
 实现过滤的方法是将符合过滤条件的数据放进一个新的QList, 然后把TableModel内部的QList<>替换为这个新的list. 为了在关闭过滤对话框后恢复原来的数据，打开过滤对话框时把原来的 list 备份到 listOld_中，关闭对话框时恢复。
 
-由于使用这种方法实现过滤，过滤过程中对表格数据进行的修改将在过滤对话框关闭时丢失，因此禁止在过滤对话框打开的状态下修改表格内容。方法是对相应的TableView设置`setEditTriggers(QAbstractItemView::NoEditTriggers);`，进行设置前先保存原来的EditTriggers的值，过滤对话框关闭时恢复原来的值。
+使用这种方法，过滤过程中对表格数据进行的修改将在过滤对话框关闭后丢失，因此禁止在过滤对话框打开的状态下修改表格内容。方法是对相应的TableView设置`setEditTriggers(QAbstractItemView::NoEditTriggers);`，进行设置前先保存原来的EditTriggers的值，过滤对话框关闭时恢复原来的值。
 
 支持使用Perl风格的正则表达式(PCRE)对字符串进行过滤。
 
