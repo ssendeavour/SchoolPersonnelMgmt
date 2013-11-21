@@ -1,58 +1,52 @@
-#include "StudentTableModel.h"
+#include "TeachingAssistantTableModel.h"
 
 #include <QSize>
 
-StudentTableModel<Student>::StudentTableModel(QVector<CONST::HDG> indexMap, QStringList headerString, QObject *parent /*= 0*/) :
-    QAbstractTableModel(parent)
-{
-    setHeader(indexMap, headerString);
+TeachingAssistantTableModel::TeachingAssistantTableModel(QVector<CONST::HDG> indexMap,  QObject *parent /*= 0*/) :
+    QAbstractTableModel(parent), indexMap_(indexMap) {
 
-    // test data
-    this->list_ = QList<Student>();
-    Student t("Class1", "Bear", "001", "23342535234131321X", Student::Sex::Female, QDate(1995, 12, 10));
+    // for test
+    TeachingAssistant t("Class two", "someone", "007", "12345678901234567X", Person::Sex::Male, QDate::currentDate(), "Undergrad", "Prof.");
     this->list_.append(t);
-
-    if(!t.setName("yang")){
-        qDebug() << t.errorString();
-    }
-    if(!t.setBirthday(QDate(2008,12, 31))){
-        qDebug() << t.errorString();
-    }
+    t.setName("Someone");
     this->list_.append(t);
-
-    if(!t.setName("Hu JIn Tao")){
-        qDebug() << t.errorString();
-    }
+    t.setName("somebody");
+    t.setPosition("Vice Prof.");
     this->list_.append(t);
-
-    if(!t.setBirthday(QDate(2999, 12, 22))){
-        qDebug() << t.errorString();
-    }
+    t.setId("123");
     this->list_.append(t);
-
-    Student stu2("Class2", "Bear simple", "002", "23342535234131321f", Student::Sex::Male, QDate(1998, 12, 32));
-    this->list_.append(stu2);
-
-    if(!stu2.setBirthday(QDate::currentDate())){
-        qDebug() << stu2.errorString();
-    }
-    this->list_.append(stu2);
-
-    Student stu = Student();
-    this->list_.append(stu);
-    list_ += list_;
-    list_ += list_;
+    t.setSex(Person::Sex::Female);
+    this->list_.append(t);
+    t.setBirthday(QDate(2001, 1, 21));
+    this->list_.append(t);
+    t.setName("jeff");
+    this->list_.append(t);
+    t.setPosition("sect");
+    this->list_.append(t);
+    t.setBirthday(QDate(1992, 12, 1));
+    this->list_.append(t);
+    t.setName("Groff");
+    this->list_.append(t);
+    this->list_ += this->list_;
+    this->list_ += this->list_;
+    this->list_ += this->list_;
 }
 
-int StudentTableModel<Student>::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{
+TeachingAssistantTableModel::~TeachingAssistantTableModel(){
+
+}
+
+int TeachingAssistantTableModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const{
     return this->list_.size();
 }
 
-int StudentTableModel<Student>::columnCount(const QModelIndex & parent /*= QModelIndex()*/) const{
-    return headerString_.size();
+int TeachingAssistantTableModel::columnCount(const QModelIndex & parent /*= QModelIndex()*/) const{
+    return this->indexMap_.size();
 }
 
-QVariant StudentTableModel<Student>::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
+QVariant TeachingAssistantTableModel::data(const QModelIndex & index, int role /*= Qt::DisplayRole*/) const{
+    //* NOTE: if used across days, Today string will be inaccurate.
+    static QString birthTooltip = "Valid date range: 1880-01-01 to Today(" + QDate::currentDate().toString("yyyy-MM-dd") + ")";
     if(!index.isValid()){
         return QVariant();
     }
@@ -60,7 +54,7 @@ QVariant StudentTableModel<Student>::data(const QModelIndex & index, int role /*
     if(role == Qt::TextAlignmentRole){
         return static_cast<int>(Qt::AlignLeft|Qt::AlignVCenter);
     } else if ((role == Qt::DisplayRole|| role == Qt::EditRole) && !this->list_.isEmpty()){
-        const P &t = list_.at(index.row());
+        const TeachingAssistant &t = list_.at(index.row());
         switch(this->indexMap_.at(index.column())){
         case CONST::HDG::ID:
             return t.getId();
@@ -80,14 +74,23 @@ QVariant StudentTableModel<Student>::data(const QModelIndex & index, int role /*
             return t.getClassNo();
         case CONST::HDG::IDNUMBER:
             return t.getIdNumber();
-        case CONST::HDG::MAJOR:
-            return t.getMajor();
-        case CONST::HDG::TUTORID:
-            return t.getTutorId();
-        case CONST::HDG::DEPT:
-            return t.getDepartment();
         case CONST::HDG::POSITION:
             return t.getPosition();
+        case CONST::HDG::DEPT:
+            return t.getDepartment();
+        case CONST::HDG::TUTORID:
+            return t.getTutorId();
+        case CONST::HDG::MAJOR:
+            return t.getMajor();
+        default:
+            return QVariant();
+        }
+    } else if (role == Qt::ToolTipRole) {
+        switch(this->indexMap_.at(index.column())){
+        case CONST::HDG::BIRTHDAY:
+            return birthTooltip;
+        case CONST::HDG::IDNUMBER:
+            return "18 digits or 17 digits with letter X";
         default:
             return QVariant();
         }
@@ -95,11 +98,10 @@ QVariant StudentTableModel<Student>::data(const QModelIndex & index, int role /*
     return QVariant();
 }
 
-bool StudentTableModel<Student>::setData(const QModelIndex & index, const QVariant & value, int role /*= Qt::EditRole*/){
+bool TeachingAssistantTableModel::setData(const QModelIndex & index, const QVariant & value, int role /*= Qt::EditRole*/){
     if(index.isValid() && role == Qt::EditRole){
         bool result = false;
-//        T &t = this->list_.at(index.row());
-        TeachingAssistant t;
+        TeachingAssistant &t = this->list_[index.row()];
         switch(this->indexMap_.at(index.column())){
         case CONST::HDG::ID:
             result = t.setId(value.toString());
@@ -116,24 +118,19 @@ bool StudentTableModel<Student>::setData(const QModelIndex & index, const QVaria
             break;
         case CONST::HDG::CLASSNO:
             result = t.setClassNo(value.toString());
-            break;
         case CONST::HDG::IDNUMBER:
             result = t.setIdNumber(value.toString());
             break;
-        case CONST::HDG::MAJOR:
-            result = t.setMajor(value.toString());
-            break;
-        case CONST::HDG::TUTORID:
-            result = t.setTutorId(value.toString());
-            break;
-        case CONST::HDG::DEPT:
-            result = t.setDepartment(value.toString());
-            break;
         case CONST::HDG::POSITION:
             result = t.setPosition(value.toString());
-            break;
+        case CONST::HDG::DEPT:
+            result = t.setDepartment(value.toString());
+        case CONST::HDG::TUTORID:
+            result = t.setTutorId(value.toString());
+        case CONST::HDG::MAJOR:
+            result = t.setMajor(value.toString());
         default:
-            ;
+            break;
         }
         if(result){
             emit dataChanged(index, index);
@@ -143,56 +140,323 @@ bool StudentTableModel<Student>::setData(const QModelIndex & index, const QVaria
     return QAbstractTableModel::setData(index, value, role);
 }
 
-Qt::ItemFlags StudentTableModel<Student>::flags(const QModelIndex & index) const{
+Qt::ItemFlags TeachingAssistantTableModel::flags(const QModelIndex & index) const{
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
 
-bool StudentTableModel<Student>::insertRows(int row, int count, const QModelIndex &parent){
+bool TeachingAssistantTableModel::insertRows(int row, int count, const QModelIndex &parent) {
+    // NOTE: [row, row+count-1], not [row, row+count)
+    beginInsertRows(parent, row, row + count - 1);
+    for(int i = row; i < row + count; ++i){
+        this->list_.insert(i, TeachingAssistant());
+    }
+    endInsertRows();
     return true;
 }
 
-bool StudentTableModel<Student>::removeRows(int row, int count, const QModelIndex &parent){
+// remove from high index to low index
+bool TeachingAssistantTableModel::removeRows(int row, int count, const QModelIndex &parent) {
+    // NOTE: [row, row+count-1], not [row, row+count)
+    beginRemoveRows(parent, row, row + count -1);
+    for(int i = row + count - 1; i >= row; i--){
+        this->list_.removeAt(i);
+    }
+    endRemoveRows();
     return true;
 }
 
-bool StudentTableModel<Student>::insertColumns(int column, int count, const QModelIndex &parent){
-    return true;
-}
-
-bool StudentTableModel<Student>::removeColumns(int column, int count, const QModelIndex &parent){
-    return true;
-}
-
-QVariant StudentTableModel<Student>::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const{
+QVariant TeachingAssistantTableModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const{
     if(role != Qt::DisplayRole){
         return QVariant();
     }
     if(orientation == Qt::Vertical){
         return section;
     } else {
-        return this->headerString_.at(section);
+        return CONST::getHeadingString(this->indexMap_.at(section));
     }
 }
 
-void StudentTableModel<Student>::setDataList(QList<Student> list){
+void TeachingAssistantTableModel::setDataList(QList<TeachingAssistant> list){
     beginResetModel();
     this->list_ = list;
     endResetModel();
 }
 
-QList<Student> StudentTableModel<Student>::getDataList(){
+QList<TeachingAssistant> TeachingAssistantTableModel::getDataList(){
     return this->list_;
 }
 
-void StudentTableModel<Student>::setHeader(const QVector<CONST::HDG> hdgMap, const QStringList headerString){
-    if(this->indexMap_.size() == hdgMap.size()){
-        this->indexMap_ = hdgMap;
-        this->headerString_ = headerString;
-    } else {
-        qDebug() << "Warning: hdgMap size mismatch, size should be static_cast<int>(CONST::HDG::COUNT), header not set";
-    }
+QVector<CONST::HDG> TeachingAssistantTableModel::getHeaderIndexs() const{
+    return this->indexMap_;
 }
 
-QVector<CONST::HDG> StudentTableModel<Student>::getHeaderIndexs() const{
-    return this->indexMap_;
+void TeachingAssistantTableModel::sort(int column, Qt::SortOrder order){
+    // std::function is about two times slower than lambda expression
+//    std::function<bool(TeachingAssistant, TeachingAssistant)> func;
+    beginResetModel();
+
+    switch(this->indexMap_[column]){
+    case CONST::HDG::ID:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getId() < b.getId(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getId() >= b.getId(); });
+        }
+        break;
+    case CONST::HDG::NAME:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [this](TeachingAssistant a, TeachingAssistant b) -> bool {
+                std::string sa = a.getName().toStdString();
+                std::string sb = b.getName().toStdString();
+                const char *pa = sa.data();
+                const char *pb = sb.data();
+                return this->zh_CN_collate_.compare(pa, pa + sa.size(), pb, pb + sb.size()) < 0;
+            });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [this](TeachingAssistant a, TeachingAssistant b) -> bool {
+                std::string sa = a.getName().toStdString();
+                std::string sb = b.getName().toStdString();
+                const char *pa = sa.data();
+                const char *pb = sb.data();
+                return this->zh_CN_collate_.compare(pa, pa + sa.size(), pb, pb + sb.size()) >= 0;
+            });
+        }
+        break;
+    case CONST::HDG::SEX:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getSex() < b.getSex(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getSex() >= b.getSex(); });
+        }
+        break;
+    case CONST::HDG::BIRTHDAY:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getBirthday() < b.getBirthday(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getBirthday() >= b.getBirthday(); });
+        }
+        break;
+    case CONST::HDG::CLASSNO:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getClassNo() < b.getClassNo(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getClassNo() >= b.getClassNo(); });
+        }
+        break;
+    case CONST::HDG::IDNUMBER:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getIdNumber() < b.getIdNumber(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getIdNumber() >= b.getIdNumber(); });
+        }
+        break;
+    case CONST::HDG::POSITION:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getPosition() < b.getPosition(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getPosition() >= b.getPosition(); });
+        }
+        break;
+    case CONST::HDG::DEPT:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getDepartment() < b.getDepartment(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getDepartment() >= b.getDepartment(); });
+        }
+        break;
+    case CONST::HDG::MAJOR:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getMajor() < b.getMajor(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getMajor() >= b.getMajor(); });
+        }
+        break;
+    case CONST::HDG::TUTORID:
+        if(Qt::AscendingOrder == order){
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getTutorId() < b.getTutorId(); });
+        } else {
+            qStableSort(this->list_.begin(), this->list_.end(), [](TeachingAssistant a, TeachingAssistant b) -> bool {return a.getTutorId() >= b.getTutorId(); });
+        }
+        break;
+    default:
+        break;
+    }
+    endResetModel();
+}
+
+void TeachingAssistantTableModel::filter(){
+    if(! this->filterEnabled_)
+        return;
+    this->isFiltering_ = true;
+
+    QList<TeachingAssistant> newList;
+    switch (this->filterColumn_) {
+    case CONST::HDG::ID: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getId().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getId().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::NAME: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getName().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getName().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::SEX: {
+        for (TeachingAssistant &ta : this->listOrig_){
+            if(ta.getSex() == this->filterSex_){
+                newList.append(ta);
+            }
+        }
+    }
+        break;
+    case CONST::HDG::BIRTHDAY: {
+        for (TeachingAssistant &ta : this->listOrig_){
+            if(this->minDate_ <= ta.getBirthday() && ta.getBirthday() <= this->maxDate_){
+                newList.append(ta);
+            }
+        }
+    }
+        break;
+    case CONST::HDG::IDNUMBER: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getIdNumber().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getIdNumber().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::POSITION: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getPosition().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getPosition().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::CLASSNO: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getClassNo().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getClassNo().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::DEPT: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getDepartment().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getDepartment().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+    case CONST::HDG::MAJOR: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getMajor().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getMajor().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    case CONST::HDG::TUTORID: {
+        if (this->useRegexp_) {
+            for (TeachingAssistant &ta : this->listOrig_){
+                if(ta.getTutorId().contains(this->filterRegexp_)){
+                    newList.append(ta);
+                }
+            }
+        } else {
+            Qt::CaseSensitivity sensitivity = this->caseSensitive_ ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            for(TeachingAssistant &ta : this->listOrig_){
+                if(ta.getTutorId().contains(this->filterString_, sensitivity)) {
+                    newList.append(ta);
+                }
+            }
+        }
+    }
+        break;
+    default:
+        return;
+    }
+
+    beginResetModel();
+    this->list_ = newList;
+    endResetModel();
+    this->isFiltering_ = false;
+}
+
+void TeachingAssistantTableModel::setRegexp(QString pattern){
+    this->filterRegexp_.setPattern(pattern);
+    if(this->caseSensitive_){
+        this->filterRegexp_.setPatternOptions(QRegularExpression::DontCaptureOption);
+    } else {
+        this->filterRegexp_.setPatternOptions(QRegularExpression::DontCaptureOption|QRegularExpression::CaseInsensitiveOption);
+    }
 }

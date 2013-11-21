@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     const.cpp \
     CommonTableDelegate.cpp \
     CommonFilterDialog.cpp \
-    TeacherTableModel.cpp
+    TeacherTableModel.cpp \
+    PostgraduateTableModel.cpp \
+    TeachingAssistantTableModel.cpp
 
 HEADERS  += mainwindow.h \
     person.h \
@@ -39,7 +41,9 @@ HEADERS  += mainwindow.h \
     StudentTableModel.h \
     CommonTableDelegate.h \
     CommonFilterDialog.h \
-    TeacherTableModel.h
+    TeacherTableModel.h \
+    PostgraduateTableModel.h \
+    TeachingAssistantTableModel.h
 
 FORMS    += mainwindow.ui
 
