@@ -5,6 +5,8 @@ for exercise and homework
 
 require Qt 5.1 and g++ 4.7+ for C++11 features
 
+don't support MinGW for lack support of C++ locale.
+
 ## 类结构
 
 1. 数据
