@@ -23,7 +23,7 @@ public:
     static const int PERSON_SEX_LEN = 2;
     static const QRegExpValidator *idNumberValidator;
 
-    enum class Sex : u_int8_t {
+    enum class Sex : quint8 {
         Male = 0,
         Female,
         Other,

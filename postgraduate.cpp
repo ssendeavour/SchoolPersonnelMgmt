@@ -54,21 +54,21 @@ QList<Postgraduate> Postgraduate::readFromFile(QFile &file, QString &error)
     QList<Postgraduate> list;
 
     QDataStream in(&file);
-    u_int32_t magicNumber;
+    quint32 magicNumber;
     in >> magicNumber;
     if(magicNumber != CONST::MAGIC_NUMBER){
         error = tr("Wrong file format, not a School Personnel Management data file");
         return list;
     }
 
-    u_int32_t filetype;
+    quint32 filetype;
     in >> filetype;
     if(filetype != CONST::FILE_TYPE_POSTGRADUATE){
         error = tr("Wrong file type, not a Postgraduate data file (extension: %1)").arg(CONST::FILE_EXTENSION_POSTGRADUATE);
         return list;
     }
 
-    u_int32_t version;
+    quint32 version;
     in >> version;
     if(version != CONST::VERSION_1_20131109){
         error = tr("unknow Postgraduate data file version: %1").arg(version);

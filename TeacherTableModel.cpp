@@ -38,7 +38,7 @@ QVariant TeacherTableModel::data(const QModelIndex & index, int role /*= Qt::Dis
             if(role == Qt::DisplayRole){
                 return Person::getSexString(t.getSex());
             }
-            return static_cast<u_int8_t>(t.getSex());
+            return static_cast<quint8>(t.getSex());
         case CONST::HDG::BIRTHDAY:
             if(role == Qt::DisplayRole){
                 return t.getBirthday().toString("yyyy-MM-dd");

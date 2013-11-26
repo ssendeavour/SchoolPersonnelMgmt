@@ -36,13 +36,13 @@ QWidget *CommonTableDelegate::createEditor(
     case CONST::HDG::SEX : {
         QComboBox *sexEditor = new QComboBox(parent);
         sexEditor->addItem(Person::getSexString(Person::Sex::Male),
-                           static_cast<u_int8_t>(Person::Sex::Male));
+                           static_cast<quint8>(Person::Sex::Male));
         sexEditor->addItem(Person::getSexString(Person::Sex::Female),
-                           static_cast<u_int8_t>(Person::Sex::Female));
+                           static_cast<quint8>(Person::Sex::Female));
         sexEditor->addItem(Person::getSexString(Person::Sex::Unspecified),
-                           static_cast<u_int8_t>(Person::Sex::Unspecified));
+                           static_cast<quint8>(Person::Sex::Unspecified));
         sexEditor->addItem(Person::getSexString(Person::Sex::Other),
-                           static_cast<u_int8_t>(Person::Sex::Other));
+                           static_cast<quint8>(Person::Sex::Other));
         return sexEditor;
     }
     case CONST::HDG::BIRTHDAY : {

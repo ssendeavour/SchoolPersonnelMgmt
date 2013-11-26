@@ -44,21 +44,21 @@ QList<Student> Student::readFromFile(QFile &file, QString &error)
     QList<Student> list;
 
     QDataStream in(&file);
-    u_int32_t magicNumber;
+    quint32 magicNumber;
     in >> magicNumber;
     if(magicNumber != CONST::MAGIC_NUMBER){
         error = tr("Wrong file format, not a School Personnel Management data file");
         return list;
     }
 
-    u_int32_t filetype;
+    quint32 filetype;
     in >> filetype;
     if(filetype != CONST::FILE_TYPE_STUDENT){
         error = tr("Wrong file type, not a Student data file (extension: %1)").arg(CONST::FILE_EXTENSION_STUDENT);
         return list;
     }
 
-    u_int32_t version;
+    quint32 version;
     in >> version;
     if(version != CONST::VERSION_1_20131109){
         error = tr("unknow Student data file version: %1").arg(version);

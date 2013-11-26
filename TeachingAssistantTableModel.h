@@ -9,10 +9,8 @@
 #include <QAtomicInt>
 #include <QRegularExpression>
 
-#include <locale>
 #include <string>
 #include <algorithm>
-//using namespace std;
 
 #include "teachingassistant.h"
 
@@ -61,7 +59,8 @@ protected:
 // sort Chinese by Pinyin
 // Linux g++ locale 名称: "zh_CN.utf"
 // VC2010 locale 名称：	"Chinese"或者"Chinese_china"
-#ifdef _MSC_VER
+//#ifdef _MSC_VER
+#ifdef _WIN32
     const std::locale zh_CN_locale_ = std::locale("Chinese_china");
 #else
     const std::locale zh_CN_locale_ = std::locale("zh_CN.utf8");

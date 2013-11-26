@@ -111,16 +111,16 @@ CommonFilterDialog::CommonFilterDialog(QVector<CONST::HDG> headings, QWidget *pa
     this->sexSelector_ = new QListWidget;
     this->sexSelector_->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     QListWidgetItem *item = new QListWidgetItem(Person::getSexString(Person::Sex::Male),
-                                                this->sexSelector_, static_cast<u_int8_t>(Person::Sex::Male));
+                                                this->sexSelector_, static_cast<quint8>(Person::Sex::Male));
     this->sexSelector_->addItem(item);
     item = new QListWidgetItem(Person::getSexString(Person::Sex::Female),
-                               this->sexSelector_, static_cast<u_int8_t>(Person::Sex::Female));
+                               this->sexSelector_, static_cast<quint8>(Person::Sex::Female));
     this->sexSelector_->addItem(item);
     item = new QListWidgetItem(Person::getSexString(Person::Sex::Other),
-                               this->sexSelector_, static_cast<u_int8_t>(Person::Sex::Other));
+                               this->sexSelector_, static_cast<quint8>(Person::Sex::Other));
     this->sexSelector_->addItem(item);
     item = new QListWidgetItem(Person::getSexString(Person::Sex::Unspecified),
-                               this->sexSelector_, static_cast<u_int8_t>(Person::Sex::Unspecified));
+                               this->sexSelector_, static_cast<quint8>(Person::Sex::Unspecified));
     this->sexSelector_->addItem(item);
     connect(this->sexSelector_, &QListWidget::itemActivated, [this](QListWidgetItem *item){
         emit sexTypeChanged(static_cast<Person::Sex>(item->type()));
