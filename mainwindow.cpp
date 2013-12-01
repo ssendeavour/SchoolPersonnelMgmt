@@ -128,19 +128,19 @@ void MainWindow::addMenuBarToolBar()
     // File menu
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
-    QAction *openAction = new QAction(tr("&Open"), this);
+    QAction *openAction = new QAction(QIcon(":/icon/asserts/icon/Open.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence::Open);
     connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
     fileMenu->addAction(openAction);
 
-    QAction *saveAction = new QAction(tr("&Save"), this);
+    QAction *saveAction = new QAction(QIcon(":/icon/asserts/icon/Save.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence::Save);
     connect(saveAction, &QAction::triggered, this, &MainWindow::saveFile);
     fileMenu->addAction(saveAction);
 
     fileMenu->addSeparator();
 
-    QAction *quitAction =new QAction(tr("&Quit"), this);
+    QAction *quitAction =new QAction(QIcon(":/icon/asserts/icon/Quit.png"), tr("&Quit"), this);
     quitAction->setShortcut(QKeySequence::Quit);
     connect(quitAction, &QAction::triggered, &qApp->quit);
     fileMenu->addAction(quitAction);
@@ -148,25 +148,25 @@ void MainWindow::addMenuBarToolBar()
     // Edit menu
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
 
-    QAction *addRowAction = new QAction(tr("&Add row"), this);
+    QAction *addRowAction = new QAction(QIcon(":/icon/asserts/icon/Plus.png"), tr("&Add row"), this);
     addRowAction->setShortcut(Qt::CTRL + Qt::Key_Y);
     connect(addRowAction, &QAction::triggered, this, &MainWindow::addNewRow);
     editMenu->addAction(addRowAction);
 
-    QAction *insertRowAction = new QAction(tr("&Insert row before"), this);
+    QAction *insertRowAction = new QAction(QIcon(":/icon/asserts/icon/Break.png"), tr("&Insert row before"), this);
     insertRowAction->setToolTip(tr("Insert a new row before selected row"));
     insertRowAction->setShortcut(Qt::CTRL + Qt::Key_I);
     connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRowBefore);
     editMenu->addAction(insertRowAction);
 
-    QAction *deleteRowsAction = new QAction(tr("&Delete selected row(s)"), this);
+    QAction *deleteRowsAction = new QAction(QIcon(":/icon/asserts/icon/Remove.png"), tr("&Delete selected row(s)"), this);
     deleteRowsAction->setShortcut(QKeySequence::Delete);
     connect(deleteRowsAction, &QAction::triggered, this, &MainWindow::deleteRows);
     editMenu->addAction(deleteRowsAction);
 
 //    editMenu->addSeparator();
 
-    QAction *filterAction = new QAction(tr("&Find && Filter"), this);
+    QAction *filterAction = new QAction(QIcon(":/icon/asserts/icon/Search.png"), tr("&Find && Filter"), this);
     filterAction->setIconText(tr("Find"));
     filterAction->setShortcut(QKeySequence::Find);
     connect(filterAction, &QAction::triggered, this, &MainWindow::openFilterDialog);
@@ -174,7 +174,7 @@ void MainWindow::addMenuBarToolBar()
 
     editMenu->addSeparator();
 
-    QAction *clearDataAction = new QAction(tr("&C&lear data"), this);
+    QAction *clearDataAction = new QAction(QIcon(":/icon/asserts/icon/Clear.png"), tr("&C&lear data"), this);
     connect(clearDataAction, &QAction::triggered, this, &MainWindow::clearAllData);
     editMenu->addAction(clearDataAction);
 

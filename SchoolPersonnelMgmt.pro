@@ -47,3 +47,6 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+RESOURCES += \
+    toolbar_icon.qrc
+
