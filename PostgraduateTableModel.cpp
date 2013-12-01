@@ -91,10 +91,13 @@ bool PostgraduateTableModel::setData(const QModelIndex & index, const QVariant &
             break;
         case CONST::HDG::CLASSNO:
             result = t.setClassNo(value.toString());
+            break;
         case CONST::HDG::MAJOR:
             result = t.setMajor(value.toString());
+            break;
         case CONST::HDG::TUTORID:
             result = t.setTutorId(value.toString());
+            break;
         default:
             break;
         }

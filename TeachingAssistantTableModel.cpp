@@ -92,17 +92,22 @@ bool TeachingAssistantTableModel::setData(const QModelIndex & index, const QVari
             break;
         case CONST::HDG::CLASSNO:
             result = t.setClassNo(value.toString());
+            break;
         case CONST::HDG::IDNUMBER:
             result = t.setIdNumber(value.toString());
             break;
         case CONST::HDG::POSITION:
             result = t.setPosition(value.toString());
+            break;
         case CONST::HDG::DEPT:
             result = t.setDepartment(value.toString());
+            break;
         case CONST::HDG::TUTORID:
             result = t.setTutorId(value.toString());
+            break;
         case CONST::HDG::MAJOR:
             result = t.setMajor(value.toString());
+            break;
         default:
             break;
         }

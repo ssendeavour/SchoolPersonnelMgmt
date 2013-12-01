@@ -89,8 +89,10 @@ bool TeacherTableModel::setData(const QModelIndex & index, const QVariant & valu
             break;
         case CONST::HDG::POSITION:
             result = t.setPosition(value.toString());
+            break;
         case CONST::HDG::DEPT:
             result = t.setDepartment(value.toString());
+            break;
         default:
             break;
         }

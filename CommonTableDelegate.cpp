@@ -129,7 +129,9 @@ void CommonTableDelegate::setModelData( QWidget *editor, QAbstractItemModel *mod
         break;
     }
     default:
-        QStyledItemDelegate::setModelData(editor, model, index);
+//        QStyledItemDelegate::setModelData(editor, model, index);
+        QLineEdit *lineEdit = qobject_cast<QLineEdit*>(editor);
+        model->setData(index, lineEdit->text());
     }
 }
 
