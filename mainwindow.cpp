@@ -417,18 +417,22 @@ void MainWindow::clearAllData()
         if(this->studentTableModel_->rowCount() <=0){
             return;
         }
+        break;
     case MainWindow::TAB::TEACHER:
         if(this->teacherTableModel_->rowCount() <=0){
             return;
         }
+        break;
     case MainWindow::TAB::POSTGRAD:
         if(this->postgradTableModel_->rowCount() <=0){
             return;
         }
+        break;
     case MainWindow::TAB::TA:
         if(this->taTableModel_->rowCount() <=0){
             return;
         }
+        break;
     }
     if(QMessageBox::Yes !=
             QMessageBox::question(this,
