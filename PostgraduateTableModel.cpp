@@ -1,6 +1,8 @@
 #include "PostgraduateTableModel.h"
 
-#include <QSize>
+#if QT_VERSION >= 0x050200
+#include <string>
+#endif
 
 PostgraduateTableModel::PostgraduateTableModel(QVector<CONST::HDG> indexMap,  QObject *parent /*= 0*/) :
     QAbstractTableModel(parent), indexMap_(indexMap) {
@@ -175,19 +177,27 @@ void PostgraduateTableModel::sort(int column, Qt::SortOrder order){
     case CONST::HDG::NAME:
         if(Qt::AscendingOrder == order){
             qStableSort(this->list_.begin(), this->list_.end(), [this](Postgraduate a, Postgraduate b) -> bool {
+#if QT_VERSION >= 0x050200
+                return this->zh_CN_collate_.compare(a.getName(), b.getName()) < 0;
+#else
                 std::string sa = a.getName().toStdString();
                 std::string sb = b.getName().toStdString();
                 const char *pa = sa.data();
                 const char *pb = sb.data();
                 return this->zh_CN_collate_.compare(pa, pa + sa.size(), pb, pb + sb.size()) < 0;
+#endif
             });
         } else {
             qStableSort(this->list_.begin(), this->list_.end(), [this](Postgraduate a, Postgraduate b) -> bool {
+#if QT_VERSION >= 0x050200
+                return this->zh_CN_collate_.compare(a.getName(), b.getName()) < 0;
+#else
                 std::string sa = a.getName().toStdString();
                 std::string sb = b.getName().toStdString();
                 const char *pa = sa.data();
                 const char *pb = sb.data();
                 return this->zh_CN_collate_.compare(pa, pa + sa.size(), pb, pb + sb.size()) >= 0;
+#endif
             });
         }
         break;

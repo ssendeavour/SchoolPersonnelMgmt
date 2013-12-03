@@ -9,8 +9,11 @@
 #include <QAtomicInt>
 #include <QRegularExpression>
 
-#include <algorithm>
-//using namespace std;
+#if QT_VERSION >= 0x050200
+#include <QCollator>
+#else
+#include <locale>
+#endif
 
 #include "postgraduate.h"
 
@@ -60,12 +63,16 @@ protected:
 // Linux g++ locale 名称: "zh_CN.utf"
 // VC2010 locale 名称：	"Chinese"或者"Chinese_china"
 //#ifdef _MSC_VER
-#ifdef _WIN32
-    const std::locale zh_CN_locale_ = std::locale("Chinese_china");
+#if QT_VERSION >= 0x050200
+    const QCollator zh_CN_locale_ = QCollator(QLocale(QLocale::Chinese, QLocale::China));
 #else
+#   ifdef _WIN32
+    const std::locale zh_CN_locale_ = std::locale("Chinese_china");
+#   else
     const std::locale zh_CN_locale_ = std::locale("zh_CN.utf8");
-#endif
+#   endif
     const std::collate<char>& zh_CN_collate_ = std::use_facet<std::collate<char> >(zh_CN_locale_);
+#endif
 
     void filter();
 
