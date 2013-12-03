@@ -185,7 +185,7 @@ void TeacherTableModel::sort(int column, Qt::SortOrder order){
         } else {
             qStableSort(this->list_.begin(), this->list_.end(), [this](Teacher a, Teacher b) -> bool {
 #if QT_VERSION >= 0x050200
-                return this->zh_CN_collate_.compare(a.getName(), b.getName()) < 0;
+                return this->zh_CN_collate_.compare(a.getName(), b.getName()) >= 0;
 #else
                 std::string sa = a.getName().toStdString();
                 std::string sb = b.getName().toStdString();
