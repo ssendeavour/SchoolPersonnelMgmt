@@ -5,7 +5,9 @@ for exercise and homework
 
 require Qt 5.1 and g++ 4.7+ for C++11 features
 
-don't support MinGW for lack support of C++ locale.
+In Windows, require Visual Studio 2013 and Qt5.2RC1. MinGW with Qt5.2RC1 should also work, not tested
+
+__don't support MinGW for lack support of C++ locale.__
 
 ## 类结构
 
