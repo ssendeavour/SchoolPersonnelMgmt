@@ -5,9 +5,24 @@ for exercise and homework
 
 require Qt 5.1 and g++ 4.7+ for C++11 features
 
-In Windows, require Visual Studio 2013 and Qt5.2RC1. MinGW with Qt5.2RC1 should also work, not tested
+In Windows, require Visual Studio 2013 and Qt5.2RC1(so you have to compile Qt5.2RC1 first currently). MinGW with Qt5.2RC1 should also work, not tested
 
 __don't support MinGW for lack support of C++ locale.__
+
+## Windows 下编译方法
+1. git clone 代码
+2. 把所有的.h, .cpp文件加上 BOM 标记，否则 VS 无法正确识别源文件编码。在Linux下，可以通过在源代码根目录执行以下命令转换：
+ ~~~bash
+ find . \( -name '*.cpp' -or -name '*.h' \)  
+ 	-exec uconv -f utf8 -t utf8 --add-signature 
+		-o /tmp/SchoolPersonnelMgmt/{} {}  \;
+ ~~~
+3. 打开Developer Command Prompt for VS2013（我的在 D:\Program Files\Microsoft Visual Studio 12.0\Common7\Tools\Shortcuts文件夹里，或者从开始菜单里找）
+4. 更改当前目录到源代码根目录，修改 `set_env_var.bat`，根据实际情况修改里面的Qt库的路径。设置完成后运行这个批处理文件。
+5. 运行 `qmake_.bat` 。
+6. 运行 `nmake` 或者 `jom` 进行编译。
+
+完成后，将在release子目录下生成可执行文件`SchoolPersonnelMgmt.exe`。
 
 ## 类结构
 
