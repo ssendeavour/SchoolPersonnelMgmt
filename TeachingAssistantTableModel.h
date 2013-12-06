@@ -64,7 +64,7 @@ protected:
 // VC2010 locale 名称：	"Chinese"或者"Chinese_china"
 //#ifdef _MSC_VER
 #if QT_VERSION >= 0x050200
-    const QCollator zh_CN_locale_ = QCollator(QLocale(QLocale::Chinese, QLocale::China));
+    const QCollator zh_CN_collate_ = QCollator(QLocale(QLocale::Chinese, QLocale::China));
 #else
 #   ifdef _WIN32
     const std::locale zh_CN_locale_ = std::locale("Chinese_china");

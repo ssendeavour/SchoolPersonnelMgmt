@@ -8,7 +8,7 @@ QT       += core gui
 
 CONFIG   += c++11
 
-QMAKE_CXX = g++-4.8
+linux-*: QMAKE_CXX = g++-4.8
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

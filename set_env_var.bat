@@ -24,7 +24,7 @@ set QT_INSTALL_TRANSLATIONS=D:\Qt\Qt5.2RC1\translations
 set QT_VERSION=5.2.0
 
 
+REM use toolchain for WinXP 32bit, change 5.01 to 5.02 for 64bit
 set CL=/D_USING_V120_SDK71_;%CL%
-
 set LINK=/SUBSYSTEM:CONSOLE,5.01 %LINK%
 
