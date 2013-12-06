@@ -397,6 +397,7 @@ void TeachingAssistantTableModel::filter(){
             }
         }
     }
+        break;
     case CONST::HDG::MAJOR: {
         if (this->useRegexp_) {
             for (TeachingAssistant &ta : this->listOrig_){
